@@ -1,0 +1,161 @@
+/* =========================================
+   PROFILE PAGE — GLASS UI (LOGIN STYLE)
+========================================= */
+
+:root {
+  --primary-bg: #3C0D0D;
+  --accent: #0d6efd;
+  --accent-dark: #0b5ed7;
+  --text-dark: #000000;
+  --text-light: #ffffff;
+
+  --heading-font: "Playfair Display", serif;
+  --body-font: "Poppins", sans-serif;
+}
+
+/* -----------------------------
+   PROFILE PAGE BACKGROUND
+------------------------------ */
+.profile-container {
+  min-height: 100vh;
+  background: url('/images/profile2.png') no-repeat center/cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  font-family: var(--body-font);
+}
+
+/* -----------------------------
+   PROFILE GLASS CARD
+------------------------------ */
+.profile-card {
+  width: 380px;
+  max-width: 95%;
+  padding: 45px 35px;
+  border-radius: 18px;
+
+  background: rgba(248, 235, 221, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  text-align: center;
+  animation: fadeSlide 0.7s ease-out;
+  transition: 0.3s ease-in-out;
+}
+
+.profile-card:hover {
+  transform: translateY(-4px);
+}
+
+/* -----------------------------
+   PROFILE IMAGE
+------------------------------ */
+.profile-pic {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  margin: 18px 0;
+  object-fit: cover;
+  border: 4px solid var(--accent);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* -----------------------------
+   PROFILE TEXT
+------------------------------ */
+.profile-card h2 {
+  font-family: var(--heading-font);
+  font-size: 1.7rem;
+  color: var(--text-dark);
+  margin-bottom: 8px;
+}
+
+.profile-card p {
+  font-size: 0.95rem;
+  color: var(--text-dark);
+  margin-bottom: 18px;
+  opacity: 0.9;
+}
+
+/* -----------------------------
+   BUTTONS (LOGIN STYLE)
+------------------------------ */
+.logout-btn,
+.go-back-btn {
+  width: 100%;
+  margin-top: 12px;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+
+  background: var(--accent);
+  color: var(--text-light);
+
+  font-size: 16px;
+  font-weight: 700;
+  font-family: var(--body-font);
+
+  box-shadow: 0 4px 12px rgba(13, 110, 253, 0.45);
+  transition: all 0.3s ease;
+}
+
+.logout-btn:hover,
+.go-back-btn:hover {
+  background: var(--accent-dark);
+  transform: translateY(-2px);
+}
+
+/* -----------------------------
+   LINKS (IF ANY)
+------------------------------ */
+.profile-card a {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.profile-card a:hover {
+  text-decoration: underline;
+}
+
+/* -----------------------------
+   ANIMATION (SAME AS LOGIN)
+------------------------------ */
+@keyframes fadeSlide {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* -----------------------------
+   RESPONSIVE (MOBILE)
+------------------------------ */
+@media (max-width: 480px) {
+  .profile-card {
+    padding: 30px 25px;
+    width: 360px;
+  }
+
+  .profile-pic {
+    width: 90px;
+    height: 90px;
+  }
+
+  .profile-card h2 {
+    font-size: 1.4rem;
+  }
+
+  .profile-card p {
+    font-size: 0.85rem;
+  }
+}

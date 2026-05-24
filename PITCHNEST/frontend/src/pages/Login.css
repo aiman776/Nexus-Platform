@@ -1,0 +1,182 @@
+/* ========================================
+      Login Page - Clean Blue Theme
+======================================== */
+
+:root {
+  --maroon: #3C0D0D;
+  --beige: #000000;              /* TEXT BLACK */
+  --gold: #0d6efd;               /* BLUE */
+  --gold-dark: #0b5ed7;          /* DARK BLUE */
+  --text-dark: #000000;
+  --text-light: #ffffff;
+
+  --heading-font: "Playfair Display", serif;
+  --body-font: "Poppins", sans-serif;
+}
+
+/* Page Background (SAME) */
+.login-page {
+  min-height: 100vh;
+  background: url('/images/profile2.png') no-repeat center/cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  font-family: var(--body-font);
+}
+
+/* Glass Card (SAME) */
+.login-containers {
+  width: 380px;
+  max-width: 95%;
+  padding: 45px 35px;
+  border-radius: 18px;
+
+  background: rgba(248, 235, 221, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  animation: fadeSlide 0.7s ease-out;
+  text-align: center;
+}
+
+/* Title */
+.login-form h1 {
+  font-family: var(--heading-font);
+  font-size: 32px;
+  font-weight: bold;
+  color: #000000;        /* BLACK */
+  margin-bottom: 25px;
+}
+
+/* Input Group */
+.login-form form div {
+  position: relative;
+  margin-bottom: 32px;
+}
+
+/* Inputs */
+.login-form input {
+  width: 100%;
+  padding: 12px 5px;
+  border: none;
+  border-bottom: 2px solid #0d6efd;   /* BLUE BORDER */
+
+  background: transparent;
+  color: #000000;                     /* BLACK TEXT */
+
+  font-size: 16px;
+  font-family: var(--body-font);
+  outline: none;
+  transition: 0.3s ease;
+}
+
+/* Input Focus */
+.login-form input:focus {
+  border-bottom-color: #0b5ed7;
+  box-shadow: 0 2px 6px rgba(13, 110, 253, 0.4);
+}
+
+/* Floating Label */
+.login-form label {
+  position: absolute;
+  left: 5px;
+  top: 12px;
+  font-size: 15px;
+  color: #000000;      /* BLACK */
+  opacity: 0.7;
+  transition: 0.3s ease;
+}
+
+.login-form input:focus + label,
+.login-form input:not(:placeholder-shown) + label {
+  top: -8px;
+  font-size: 13px;
+  color: #0d6efd;      /* BLUE */
+  opacity: 1;
+}
+
+/* Submit Button */
+.btn-submit-login {
+  width: 100%;
+  padding: 14px;
+  background: #0d6efd;      /* BLUE */
+  color: #ffffff;           /* WHITE TEXT */
+
+  font-weight: 700;
+  font-size: 17px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+
+  box-shadow: 0 4px 12px rgba(13, 110, 253, 0.45);
+  transition: all 0.3s ease;
+}
+
+.btn-submit-login:hover {
+  background: #0b5ed7;
+  transform: translateY(-2px);
+}
+
+/* Register Link */
+.register-link {
+  margin-top: 18px;
+  color: #000000;      /* BLACK */
+  font-size: 14px;
+}
+
+.register-link a {
+  color: #0d6efd;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.register-link a:hover {
+  text-decoration: underline;
+}
+
+/* Back Home Button */
+.back-home {
+  position: absolute;
+  top: 20px;
+  left: 25px;
+}
+
+.home {
+  padding: 8px 16px;
+  background: #ffffff;
+  color: #0d6efd;
+  border-radius: 8px;
+
+  font-weight: 600;
+  text-decoration: none;
+  transition: 0.3s ease;
+}
+
+.home:hover {
+  background: #0d6efd;
+  color: #ffffff;
+}
+
+/* Animation */
+@keyframes fadeSlide {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive (SAME) */
+@media (max-width: 480px) {
+  .login-containers {
+    padding: 30px 25px;
+    width: 360px !important;
+  }
+}

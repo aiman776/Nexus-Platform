@@ -1,0 +1,215 @@
+/* ========================================
+   REGISTER PAGE — SAME AS LOGIN STYLE
+======================================== */
+
+:root {
+  --primary: #0d6efd;
+  --primary-dark: #0b5ed7;
+  --text-dark: #000000;
+  --text-light: #ffffff;
+
+  --heading-font: "Playfair Display", serif;
+  --body-font: "Poppins", sans-serif;
+}
+
+/* -----------------------------
+   PAGE BACKGROUND
+------------------------------ */
+.Register-page {
+  min-height: 100vh;
+  background: url("/images/profile2.png") no-repeat center/cover;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+
+  font-family: var(--body-font);
+}
+
+/* -----------------------------
+   GLASS REGISTER CONTAINER
+------------------------------ */
+.reg-container {
+  width: 380px;
+  max-width: 95%;
+  padding: 45px 35px;
+  border-radius: 18px;
+
+  background: rgba(248, 235, 221, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  text-align: center;
+
+  animation: fadeSlide 0.7s ease-out;
+}
+
+/* -----------------------------
+   HEADING
+------------------------------ */
+.main-heading-reg {
+  font-family: var(--heading-font);
+  font-size: 32px;
+  font-weight: bold;
+  color: var(--text-dark);
+  margin-bottom: 25px;
+}
+
+/* -----------------------------
+   INPUT GROUP
+------------------------------ */
+.registration-form form div {
+  position: relative;
+  margin-bottom: 32px;
+}
+
+/* -----------------------------
+   INPUTS
+------------------------------ */
+.registration-form input {
+  width: 100%;
+  padding: 12px 5px;
+  border: none;
+  border-bottom: 2px solid var(--primary);
+
+  background: transparent;
+  color: var(--text-dark);
+
+  font-size: 16px;
+  outline: none;
+  transition: 0.3s ease;
+}
+
+.registration-form input:focus {
+  border-bottom-color: var(--primary-dark);
+  box-shadow: 0 2px 6px rgba(13, 110, 253, 0.4);
+}
+
+/* -----------------------------
+   FLOATING LABELS
+------------------------------ */
+.registration-form label {
+  position: absolute;
+  left: 5px;
+  top: 12px;
+  font-size: 15px;
+  color: var(--text-dark);
+  opacity: 0.7;
+  transition: 0.3s ease;
+}
+
+.registration-form input:focus + label,
+.registration-form input:not(:placeholder-shown) + label {
+  top: -8px;
+  font-size: 13px;
+  color: var(--primary);
+  opacity: 1;
+}
+
+/* -----------------------------
+   SUBMIT BUTTON
+------------------------------ */
+.btn-submit-reg {
+  width: 100%;
+  padding: 14px;
+
+  background: var(--primary);
+  color: var(--text-light);
+
+  font-weight: 700;
+  font-size: 17px;
+
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+
+  box-shadow: 0 4px 12px rgba(13, 110, 253, 0.45);
+  transition: all 0.3s ease;
+}
+
+.btn-submit-reg:hover {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+}
+
+/* -----------------------------
+   LOGIN LINK
+------------------------------ */
+.login-link {
+  margin-top: 18px;
+  font-size: 14px;
+  color: var(--text-dark);
+}
+
+.login-link a {
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.login-link a:hover {
+  text-decoration: underline;
+}
+
+/* -----------------------------
+   BACK HOME BUTTON
+------------------------------ */
+.back-home-reg {
+  position: absolute;
+  top: 20px;
+  left: 25px;
+}
+
+.home-reg {
+  padding: 8px 16px;
+  background: #ffffff;
+  color: var(--primary);
+
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+
+  transition: 0.3s ease;
+}
+
+.home-reg:hover {
+  background: var(--primary);
+  color: #ffffff;
+}
+
+/* -----------------------------
+   ANIMATION
+------------------------------ */
+@keyframes fadeSlide {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* -----------------------------
+   RESPONSIVE — SAME AS LOGIN
+------------------------------ */
+@media (max-width: 480px) {
+  .reg-container {
+    width: 360px;
+    padding: 30px 25px;
+  }
+
+  .main-heading-reg {
+    font-size: 26px;
+  }
+
+  .btn-submit-reg {
+    font-size: 16px;
+    padding: 12px;
+  }
+}
