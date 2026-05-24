@@ -1,148 +1,248 @@
-/* ========================================
-   REGISTER PAGE — SAME AS LOGIN STYLE
-======================================== */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
-  --primary: #0d6efd;
-  --primary-dark: #0b5ed7;
-  --text-dark: #000000;
-  --text-light: #ffffff;
-
-  --heading-font: "Playfair Display", serif;
-  --body-font: "Poppins", sans-serif;
+  --primary: #2563eb;
+  --primary-dark: #1d4ed8;
+  --primary-light: #eff6ff;
+  --border: #e2e8f0;
+  --text-dark: #1e293b;
+  --text-gray: #64748b;
 }
 
-/* -----------------------------
-   PAGE BACKGROUND
------------------------------- */
-.Register-page {
+.register-page {
   min-height: 100vh;
-  background: url("/images/profile2.png") no-repeat center/cover;
-
+  background: #f8fafc;
   display: flex;
   justify-content: center;
-  align-items: center;
-  padding: 20px;
-
-  font-family: var(--body-font);
+  align-items: flex-start;
+  font-family: 'Inter', sans-serif;
 }
 
-/* -----------------------------
-   GLASS REGISTER CONTAINER
------------------------------- */
-.reg-container {
-  width: 380px;
-  max-width: 95%;
-  padding: 45px 35px;
-  border-radius: 18px;
-
-  background: rgba(248, 235, 221, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-  text-align: center;
-
-  animation: fadeSlide 0.7s ease-out;
-}
-
-/* -----------------------------
-   HEADING
------------------------------- */
-.main-heading-reg {
-  font-family: var(--heading-font);
-  font-size: 32px;
-  font-weight: bold;
-  color: var(--text-dark);
-  margin-bottom: 25px;
-}
-
-/* -----------------------------
-   INPUT GROUP
------------------------------- */
-.registration-form form div {
-  position: relative;
-  margin-bottom: 32px;
-}
-
-/* -----------------------------
-   INPUTS
------------------------------- */
-.registration-form input {
+.register-main {
   width: 100%;
-  padding: 12px 5px;
-  border: none;
-  border-bottom: 2px solid var(--primary);
+  max-width: 480px;
+  padding: 40px 20px 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
+/* Logo */
+.reg-logo img {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  margin-bottom: 16px;
+}
+
+/* Title */
+.reg-title {
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 6px;
+  text-align: center;
+}
+
+.reg-subtitle {
+  font-size: 0.95rem;
+  color: var(--text-gray);
+  margin-bottom: 28px;
+  text-align: center;
+}
+
+/* Container */
+.reg-container {
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px 36px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+/* Role label */
+.role-label {
+  font-size: 0.9rem;
+  color: var(--text-gray);
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+
+/* Role buttons */
+.role-buttons {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.role-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  background: #ffffff;
+  color: var(--text-gray);
+  font-size: 0.92rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Inter', sans-serif;
+}
+
+.role-btn.active {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-light);
+}
+
+.role-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* Form */
+.registration-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* ✅ Sirf input divs ko relative karo */
+.registration-form div:not(.terms-check):not(.or-divider) {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+/* Input icon */
+.input-icon {
+  position: absolute;
+  left: 0;
+  top: 14px;
+  color: var(--text-gray);
+}
+
+/* Inputs */
+.registration-form input[type="text"],
+.registration-form input[type="email"],
+.registration-form input[type="password"],
+.registration-form input[type="number"] {
+  width: 100%;
+  padding: 12px 5px 12px 26px;
+  border: none;
+  border-bottom: 1.5px solid var(--border);
   background: transparent;
   color: var(--text-dark);
-
-  font-size: 16px;
+  font-size: 0.95rem;
+  font-family: 'Inter', sans-serif;
   outline: none;
   transition: 0.3s ease;
 }
 
 .registration-form input:focus {
-  border-bottom-color: var(--primary-dark);
-  box-shadow: 0 2px 6px rgba(13, 110, 253, 0.4);
+  border-bottom-color: var(--primary);
 }
 
-/* -----------------------------
-   FLOATING LABELS
------------------------------- */
-.registration-form label {
+/* Floating labels */
+.registration-form div:not(.terms-check) label {
   position: absolute;
-  left: 5px;
-  top: 12px;
-  font-size: 15px;
-  color: var(--text-dark);
-  opacity: 0.7;
+  left: 26px;
+  top: 13px;
+  font-size: 0.92rem;
+  color: var(--text-gray);
   transition: 0.3s ease;
+  pointer-events: none;
 }
 
 .registration-form input:focus + label,
 .registration-form input:not(:placeholder-shown) + label {
   top: -8px;
-  font-size: 13px;
+  font-size: 0.78rem;
   color: var(--primary);
-  opacity: 1;
 }
 
-/* -----------------------------
-   SUBMIT BUTTON
------------------------------- */
+/* Submit button */
 .btn-submit-reg {
   width: 100%;
-  padding: 14px;
-
+  padding: 13px;
   background: var(--primary);
-  color: var(--text-light);
-
-  font-weight: 700;
-  font-size: 17px;
-
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 600;
   border: none;
   border-radius: 10px;
   cursor: pointer;
-
-  box-shadow: 0 4px 12px rgba(13, 110, 253, 0.45);
-  transition: all 0.3s ease;
+  margin-top: 8px;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.2s ease;
 }
 
 .btn-submit-reg:hover {
   background: var(--primary-dark);
-  transform: translateY(-2px);
 }
 
-/* -----------------------------
-   LOGIN LINK
------------------------------- */
+/* ✅ Terms checkbox */
+.terms-check {
+  display: flex !important;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 12px 0 !important;
+  position: static !important;
+}
+
+.terms-check input[type="checkbox"] {
+  width: auto;
+  border-bottom: none;
+  padding: 0;
+  position: static;
+  margin-top: 3px;
+}
+
+.terms-check label {
+  position: static !important;
+  font-size: 0.85rem;
+  color: var(--text-gray);
+  pointer-events: all;
+}
+
+.terms-check a {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+/* ✅ Or divider */
+.or-divider {
+  display: flex !important;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0 !important;
+  position: static !important;
+}
+
+.or-divider span {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+  display: block;
+}
+
+.or-divider p {
+  font-size: 0.85rem;
+  color: var(--text-gray);
+  margin: 0;
+}
+
+/* Login link */
 .login-link {
+  text-align: center;
   margin-top: 18px;
-  font-size: 14px;
-  color: var(--text-dark);
+  font-size: 0.9rem;
+  color: var(--text-gray);
 }
 
 .login-link a {
@@ -151,29 +251,26 @@
   text-decoration: none;
 }
 
-.login-link a:hover {
-  text-decoration: underline;
-}
-
-/* -----------------------------
-   BACK HOME BUTTON
------------------------------- */
+/* Back home - fixed top left */
 .back-home-reg {
-  position: absolute;
+  position: fixed;
   top: 20px;
-  left: 25px;
+  left: 20px;
+  z-index: 100;
 }
 
 .home-reg {
   padding: 8px 16px;
   background: #ffffff;
   color: var(--primary);
-
+  border: 1px solid var(--border);
   border-radius: 8px;
   font-weight: 600;
+  font-size: 0.9rem;
   text-decoration: none;
-
-  transition: 0.3s ease;
+  transition: 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  display: inline-block;
 }
 
 .home-reg:hover {
@@ -181,35 +278,11 @@
   color: #ffffff;
 }
 
-/* -----------------------------
-   ANIMATION
------------------------------- */
-@keyframes fadeSlide {
-  from {
-    opacity: 0;
-    transform: translateY(18px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* -----------------------------
-   RESPONSIVE — SAME AS LOGIN
------------------------------- */
 @media (max-width: 480px) {
   .reg-container {
-    width: 360px;
-    padding: 30px 25px;
+    padding: 24px 20px;
   }
-
-  .main-heading-reg {
-    font-size: 26px;
-  }
-
-  .btn-submit-reg {
-    font-size: 16px;
-    padding: 12px;
+  .reg-title {
+    font-size: 1.4rem;
   }
 }

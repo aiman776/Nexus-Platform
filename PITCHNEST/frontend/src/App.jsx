@@ -7,6 +7,8 @@ import { Navbar } from "./Components/Navbar";
 import { Error } from "./pages/error";
 import { Logout } from "./pages/Logout";
 import Profile from "./pages/Profile";
+import EntrepreneurDashboard from "./pages/dashboard/EntrepreneurDashboard";
+import InvestorDashboard from "./pages/dashboard/InvestorDashboard";
 
 const MainLayout = () => (
   <>
@@ -30,6 +32,8 @@ const App = () => {
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/logout" element={<Logout />} />
+          <Route path="/dashboard/entrepreneur" element={<EntrepreneurDashboard />} />
+          <Route path="/dashboard/investor" element={<InvestorDashboard />} />
         </Route>
         {/* 🟡 Auth Layout Routes */}
         <Route element={<AuthLayout />}>

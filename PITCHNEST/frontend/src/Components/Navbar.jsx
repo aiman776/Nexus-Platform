@@ -3,12 +3,7 @@ import "./Navbar.css";
 import { useAuth } from "../store/auth";
 import { useState } from "react";
 import {
-  LayoutDashboard,
-  MessageCircle,
-  Bell,
-  User,
-  LogOut,
-  Home,
+  LayoutDashboard, MessageCircle, Bell, User, LogOut, Home,
 } from "lucide-react";
 
 export const Navbar = () => {
@@ -18,30 +13,33 @@ export const Navbar = () => {
   const firstLetter = user?.username?.charAt(0).toUpperCase() || "U";
   const username = user?.username || "";
 
+  // ✅ Role ke mutabik dashboard link
+  const dashboardLink = user?.role === "investor"
+    ? "/dashboard/investor"
+    : "/dashboard/entrepreneur";
+
   return (
     <header>
       <div className="top-navbar">
 
-        {/* Logo */}
         <div className="logo-brand">
           <NavLink to="/">
             <img src="/pitchnest-logo.png" alt="Logo" />
-            <span>Pichnest Nexus</span>
+            <span>PITCHNEST</span>
           </NavLink>
         </div>
 
-        {/* Hamburger */}
         <div className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)}>
           {menuOpen ? "✕" : "☰"}
         </div>
 
-        {/* Nav Links */}
         <nav className={`top-nav ${menuOpen ? "open" : ""}`}>
           <ul onClick={() => setMenuOpen(false)}>
             {isLoggedIn ? (
               <>
+                {/* ✅ Role based dashboard link */}
                 <li>
-                  <NavLink to="/dashboard">
+                  <NavLink to={dashboardLink}>
                     <LayoutDashboard size={17} /> Dashboard
                   </NavLink>
                 </li>
@@ -65,13 +63,9 @@ export const Navbar = () => {
                     <LogOut size={17} /> Logout
                   </NavLink>
                 </li>
-
-                {/* Avatar + Username */}
                 <li className="avatar-wrapper">
-                   <NavLink to="/profile">
                   <div className="avatar-circle">{firstLetter}</div>
                   <span className="avatar-name">{username}</span>
-                  </NavLink>
                 </li>
               </>
             ) : (
@@ -90,7 +84,6 @@ export const Navbar = () => {
             )}
           </ul>
         </nav>
-
       </div>
     </header>
   );
