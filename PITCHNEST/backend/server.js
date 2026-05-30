@@ -5,6 +5,8 @@ const app = express();
 
 // ✅ Routes import
 const authRouter = require("./routes/auth_router");
+const contactroute = require("./routes/contact_router");
+
 const connectDB = require("./utils/db");
 const errorMiddleware = require("./middlewares/error-middleware");
 
@@ -21,6 +23,7 @@ app.use(express.json());
 
 // ✅ Routes
 app.use("/api/auth", authRouter);
+app.use("/api/form", contactroute);
 
 // ✅ Test Route
 app.get("/", (req, res) => {

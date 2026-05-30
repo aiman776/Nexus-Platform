@@ -9,6 +9,12 @@ import { Logout } from "./pages/Logout";
 import Profile from "./pages/Profile";
 import EntrepreneurDashboard from "./pages/dashboard/EntrepreneurDashboard";
 import InvestorDashboard from "./pages/dashboard/InvestorDashboard";
+import HelpPage from "./pages/dashboard/HelpPage";
+import SettingsPage from "./pages/dashboard/SettingsPage";
+import DocumentsPage from "./pages/dashboard/DocumentsPage";
+import DealsPage from "./pages/dashboard/DealsPage";
+import NotificationsPage from "./pages/dashboard/NotificationsPage";
+import MessagesPage from "./pages/dashboard/MessagesPage";
 
 const MainLayout = () => (
   <>
@@ -34,13 +40,21 @@ const App = () => {
           <Route path="/logout" element={<Logout />} />
           <Route path="/dashboard/entrepreneur" element={<EntrepreneurDashboard />} />
           <Route path="/dashboard/investor" element={<InvestorDashboard />} />
+          <Route path="/help" element={<HelpPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/documents" element={<DocumentsPage />} />
+          <Route path="/deals" element={<DealsPage />} />
+          <Route path="/notifications" element={<NotificationsPage />} />
+          <Route path="/messages" element={<MessagesPage />} />
         </Route>
+
         {/* 🟡 Auth Layout Routes */}
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/profile" element={<Profile />} />
         </Route>
+
         {/* 🔴 Error Page */}
         <Route path="/*" element={<Error />} />
 
