@@ -1,0 +1,222 @@
+/* Search Row */
+.id-search-row {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.id-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 10px 16px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+
+.id-search input {
+  border: none;
+  outline: none;
+  font-size: 0.92rem;
+  color: #1e293b;
+  width: 100%;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Filter badges */
+.id-filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.id-filter-badge {
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  border: 1.5px solid #e2e8f0;
+  background: #f8fafc;
+  color: #64748b;
+  transition: all 0.2s ease;
+}
+
+.id-filter-badge:hover {
+  border-color: #2563eb;
+  color: #2563eb;
+}
+
+.id-filter-badge.active {
+  background: #eff6ff;
+  color: #2563eb;
+  border-color: #2563eb;
+  font-weight: 600;
+}
+
+/* Startups Grid */
+.id-startups-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+/* Startup Card */
+.id-startup-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: all 0.2s ease;
+}
+
+.id-startup-card:hover {
+  box-shadow: 0 4px 16px rgba(37,99,235,0.1);
+  border-color: #bfdbfe;
+  transform: translateY(-2px);
+}
+
+.id-card-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.id-card-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #2563eb;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+
+.id-card-top h3 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 2px;
+}
+
+.id-card-top p {
+  font-size: 0.78rem;
+  color: #94a3b8;
+}
+
+.id-card-pitch {
+  font-size: 0.85rem;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+.id-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.id-tag {
+  background: #f1f5f9;
+  color: #475569;
+  padding: 3px 8px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 500;
+}
+
+.id-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 0.78rem;
+  color: #64748b;
+}
+
+.id-card-meta span {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.id-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.id-industry-badge {
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.id-fintech    { background: #dbeafe; color: #2563eb; }
+.id-cleantech  { background: #dcfce7; color: #16a34a; }
+.id-healthtech { background: #fce7f3; color: #db2777; }
+.id-agtech     { background: #fef3c7; color: #d97706; }
+
+.id-view-btn {
+  padding: 7px 14px;
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.2s ease;
+}
+
+.id-view-btn:hover {
+  background: #1d4ed8;
+}
+
+/* Clear button */
+.clear-btn {
+  margin-top: 8px;
+  padding: 8px 16px;
+  background: #ffffff;
+  color: #2563eb;
+  border: 1.5px solid #2563eb;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.2s ease;
+}
+
+.clear-btn:hover {
+  background: #eff6ff;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .id-startups-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .id-startups-grid {
+    grid-template-columns: 1fr;
+  }
+}

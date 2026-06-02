@@ -15,6 +15,13 @@ import DocumentsPage from "./pages/dashboard/DocumentsPage";
 import DealsPage from "./pages/dashboard/DealsPage";
 import NotificationsPage from "./pages/dashboard/NotificationsPage";
 import MessagesPage from "./pages/dashboard/MessagesPage";
+import FindStartupsPage from "./pages/dashboard/FindStartupsPage";
+import InvestorsPage from "./pages/dashboard/InvestorsPage";
+import EntrepreneurProfile from "./pages/dashboard/EntrepreneurProfile";
+import InvestorProfile from "./pages/dashboard/InvestorProfile";
+
+
+
 
 const MainLayout = () => (
   <>
@@ -46,6 +53,11 @@ const App = () => {
           <Route path="/deals" element={<DealsPage />} />
           <Route path="/notifications" element={<NotificationsPage />} />
           <Route path="/messages" element={<MessagesPage />} />
+          <Route path="/find-startups" element={<FindStartupsPage />} />
+          <Route path="/find-investors" element={<InvestorsPage />} />
+          <Route path="/entrepreneur/:id" element={<EntrepreneurProfile />} />
+          <Route path="/investor/:id" element={<InvestorProfile />} />
+
         </Route>
 
         {/* 🟡 Auth Layout Routes */}

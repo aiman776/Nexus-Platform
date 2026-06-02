@@ -1,0 +1,119 @@
+/* ========================================
+   Investor Profile Page
+======================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;500;600&display=swap');
+
+* { font-family: 'Poppins', sans-serif; box-sizing: border-box; }
+
+.dashboard-layout { display: flex; min-height: 100vh; background: #f1f5f9; }
+.dashboard-main   { flex: 1; padding: 28px; overflow-y: auto; display: flex; flex-direction: column; gap: 24px; }
+
+/* Not Found */
+.not-found { text-align: center; padding: 60px 20px; }
+.not-found h2 { font-size: 22px; font-weight: 700; color: #111827; margin-bottom: 8px; }
+.not-found p  { color: #6b7280; margin-bottom: 16px; }
+
+/* ===== HEADER CARD ===== */
+.ip-header-card {
+  background: #fff; border-radius: 16px; padding: 24px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+  display: flex; align-items: flex-start;
+  justify-content: space-between; flex-wrap: wrap; gap: 20px;
+}
+.ip-header-left { display: flex; align-items: flex-start; gap: 20px; flex-wrap: wrap; }
+
+/* Avatar */
+.ip-avatar-wrapper { position: relative; flex-shrink: 0; }
+.ip-avatar { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 3px solid #0d6efd; box-shadow: 0 4px 12px rgba(13,110,253,0.25); }
+.ip-status { position: absolute; bottom: 4px; right: 4px; width: 14px; height: 14px; border-radius: 50%; border: 2px solid white; }
+.ip-status.online  { background: #22c55e; }
+.ip-status.offline { background: #94a3b8; }
+
+/* Info */
+.ip-header-info h1 { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; color: #111827; margin: 0 0 6px 0; }
+.ip-subtitle { display: flex; align-items: center; gap: 5px; font-size: 14px; color: #6b7280; margin-bottom: 10px; }
+
+/* Badges */
+.ip-badges { display: flex; flex-wrap: wrap; gap: 8px; }
+.ip-badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+.ip-badge.blue      { background: #dbeafe; color: #1d4ed8; }
+.ip-badge.secondary { background: #f0fdf4; color: #166534; }
+
+/* Actions */
+.ip-header-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+
+/* ===== BUTTONS ===== */
+.btn-blue {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 10px 20px; background: #0d6efd; color: #fff;
+  border: none; border-radius: 10px;
+  font-size: 14px; font-weight: 600; font-family: 'Poppins', sans-serif;
+  cursor: pointer; transition: all 0.2s ease; text-decoration: none;
+}
+.btn-blue:hover { background: #0b5ed7; transform: translateY(-1px); }
+
+.btn-outline {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 10px 18px; background: transparent; color: #0d6efd;
+  border: 1.5px solid #0d6efd; border-radius: 10px;
+  font-size: 14px; font-weight: 600; font-family: 'Poppins', sans-serif;
+  cursor: pointer; transition: all 0.2s ease;
+}
+.btn-outline:hover { background: #e8f0fe; }
+
+/* ===== MAIN GRID ===== */
+.ip-grid { display: grid; grid-template-columns: 1fr 320px; gap: 24px; align-items: start; }
+@media (max-width: 1024px) { .ip-grid { grid-template-columns: 1fr; } }
+
+.ip-left, .ip-right { display: flex; flex-direction: column; gap: 20px; }
+
+/* ===== CARDS ===== */
+.ip-card { background: #fff; border-radius: 14px; box-shadow: 0 2px 10px rgba(0,0,0,0.07); overflow: hidden; }
+.ip-card-header { padding: 16px 20px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; }
+.ip-card-header h2 { font-size: 16px; font-weight: 600; color: #111827; margin: 0; }
+.ip-card-header span { font-size: 13px; color: #6b7280; }
+.ip-card-body { padding: 20px; }
+.ip-card-body > p { font-size: 14px; color: #374151; line-height: 1.7; margin: 0; }
+
+/* Interests */
+.ip-interests { display: flex; flex-direction: column; gap: 18px; }
+.ip-interests h3 { font-size: 14px; font-weight: 600; color: #111827; margin: 0 0 8px 0; }
+.ip-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.ip-tag { padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+.ip-tag.blue  { background: #dbeafe; color: #1d4ed8; }
+.ip-tag.green { background: #f0fdf4; color: #166534; }
+
+/* Criteria */
+.ip-criteria { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+.ip-criteria li { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: #374151; line-height: 1.5; }
+.ip-criteria li::before { content: ''; display: inline-block; width: 8px; height: 8px; min-width: 8px; background: #0d6efd; border-radius: 50%; margin-top: 5px; }
+
+/* Portfolio */
+.ip-portfolio-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.ip-portfolio-item { display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid #e5e7eb; border-radius: 10px; }
+.ip-portfolio-icon { padding: 8px; background: #e8f0fe; border-radius: 8px; color: #0d6efd; display: flex; }
+.ip-portfolio-item h4 { font-size: 13px; font-weight: 600; color: #111827; margin: 0 0 2px 0; }
+.ip-portfolio-item p  { font-size: 11px; color: #6b7280; margin: 0; }
+
+/* Details */
+.ip-detail-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+.ip-detail-item span   { font-size: 13px; color: #6b7280; }
+.ip-detail-item strong { font-size: 15px; font-weight: 700; color: #111827; }
+
+/* Progress */
+.ip-focus { border-top: 1px solid #e5e7eb; padding-top: 14px; margin-top: 4px; display: flex; flex-direction: column; gap: 10px; }
+.ip-focus > span { font-size: 12px; color: #6b7280; }
+.ip-progress-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.ip-progress-row p { font-size: 12px; font-weight: 500; color: #374151; margin: 0; white-space: nowrap; }
+.ip-progress-bar  { flex: 1; height: 8px; background: #e5e7eb; border-radius: 99px; overflow: hidden; }
+.ip-progress-fill { height: 100%; background: #0d6efd; border-radius: 99px; }
+
+/* Stats */
+.ip-stat-item {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px; border: 1px solid #e5e7eb; border-radius: 10px;
+  background: #f9fafb; margin-bottom: 10px; color: #0d6efd;
+}
+.ip-stat-item h4 { font-size: 13px; font-weight: 500; color: #111827; margin: 0 0 4px 0; }
+.ip-stat-item p  { font-size: 20px; font-weight: 700; color: #0d6efd; margin: 0; }

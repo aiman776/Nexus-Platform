@@ -1,0 +1,244 @@
+/* Main Grid */
+.ed-grid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.ed-left, .ed-right {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Collaboration Cards */
+.collab-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.collab-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+  transition: all 0.2s ease;
+}
+
+.collab-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+.collab-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.collab-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #2563eb;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+
+.collab-info {
+  flex: 1;
+}
+
+.collab-info h3 {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 2px;
+}
+
+.collab-info p {
+  font-size: 0.82rem;
+  color: #94a3b8;
+}
+
+.collab-status {
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.status-pending  { background: #fef3c7; color: #d97706; }
+.status-accepted { background: #dcfce7; color: #16a34a; }
+.status-rejected { background: #fee2e2; color: #dc2626; }
+
+.collab-message {
+  font-size: 0.88rem;
+  color: #64748b;
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.collab-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.collab-time {
+  font-size: 0.78rem;
+  color: #94a3b8;
+}
+
+.collab-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.collab-btn {
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.collab-btn.accept {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.collab-btn.accept:hover { background: #1d4ed8; }
+
+.collab-btn.reject {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.collab-btn.reject:hover {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+/* Recommended Investors */
+.rec-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.rec-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: all 0.2s ease;
+}
+
+.rec-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  border-color: #bfdbfe;
+}
+
+.rec-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rec-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #2563eb;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.rec-top h3 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 2px;
+}
+
+.rec-top p {
+  font-size: 0.78rem;
+  color: #94a3b8;
+}
+
+.rec-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.rec-tag {
+  background: #eff6ff;
+  color: #2563eb;
+  padding: 3px 8px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 500;
+}
+
+.rec-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.78rem;
+  color: #64748b;
+}
+
+.rec-btn {
+  width: 100%;
+  padding: 8px;
+  background: #ffffff;
+  color: #2563eb;
+  border: 1.5px solid #2563eb;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.2s ease;
+}
+
+.rec-btn:hover {
+  background: #eff6ff;
+}
+
+.view-all-link {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.view-all-link:hover {
+  text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .ed-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,130 @@
+/* ========================================
+   Find Investors Page
+======================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;500;600&display=swap');
+
+* { font-family: 'Poppins', sans-serif; box-sizing: border-box; }
+
+.dashboard-layout { display: flex; min-height: 100vh; background: #f1f5f9; }
+.dashboard-main   { flex: 1; padding: 28px; overflow-y: auto; }
+
+/* Header */
+.dashboard-header         { margin-bottom: 24px; }
+.dashboard-header h1      { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; color: #111827; margin: 0 0 4px 0; }
+.dashboard-header p       { font-size: 14px; color: #6b7280; margin: 0; }
+
+/* Layout */
+.find-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 24px;
+}
+@media (max-width: 1024px) {
+  .find-layout { grid-template-columns: 1fr; }
+}
+
+/* Filter Card */
+.find-filters-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+  height: fit-content;
+}
+.find-filters-card h2 {
+  font-size: 16px; font-weight: 600; color: #111827;
+  margin: 0 0 20px 0; padding-bottom: 12px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* Filter Section */
+.filter-section       { margin-bottom: 20px; }
+.filter-section h3    { font-size: 12px; font-weight: 600; color: #374151; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 10px 0; }
+
+.filter-btn {
+  display: flex; align-items: center; gap: 6px;
+  width: 100%; text-align: left;
+  padding: 8px 12px; border-radius: 8px; border: none;
+  font-size: 13px; font-family: 'Poppins', sans-serif;
+  color: #374151; background: transparent;
+  cursor: pointer; margin-bottom: 4px;
+  transition: all 0.2s ease;
+}
+.filter-btn:hover  { background: #f1f5f9; }
+.filter-btn.active { background: #e8f0fe; color: #0d6efd; font-weight: 600; }
+
+/* Main */
+.find-main { display: flex; flex-direction: column; gap: 20px; }
+
+/* Search Row */
+.find-search-row { display: flex; align-items: center; gap: 14px; }
+.find-search {
+  flex: 1; display: flex; align-items: center; gap: 10px;
+  background: #ffffff; border: 1px solid #e5e7eb;
+  border-radius: 10px; padding: 10px 16px; transition: 0.3s ease;
+}
+.find-search:focus-within { border-color: #0d6efd; box-shadow: 0 0 0 3px rgba(13,110,253,0.12); }
+.find-search input {
+  flex: 1; border: none; outline: none;
+  font-size: 14px; font-family: 'Poppins', sans-serif;
+  color: #111827; background: transparent;
+}
+.find-search input::placeholder { color: #94a3b8; }
+.find-results { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #6b7280; white-space: nowrap; }
+
+/* Grid */
+.find-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+@media (max-width: 768px) {
+  .find-grid { grid-template-columns: 1fr; }
+}
+
+/* Investor Card */
+.startup-card {
+  background: #ffffff; border-radius: 14px; padding: 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+  display: flex; flex-direction: column; gap: 12px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.startup-card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.12); }
+
+.startup-card-top { display: flex; align-items: center; gap: 14px; }
+.startup-card-avatar {
+  width: 46px; height: 46px;
+  background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+  color: #fff; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; font-weight: 700; flex-shrink: 0;
+}
+.startup-card-top h3     { font-size: 15px; font-weight: 600; color: #111827; margin: 0 0 2px 0; }
+.startup-card-name       { font-size: 13px; color: #6b7280; margin: 0; }
+.startup-card-pitch      { font-size: 13px; color: #374151; line-height: 1.6; margin: 0; }
+
+/* Tags */
+.startup-card-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.startup-tag { padding: 4px 10px; background: #f1f5f9; border-radius: 20px; font-size: 11px; font-weight: 500; color: #475569; }
+
+/* Meta */
+.startup-card-meta { display: flex; flex-wrap: wrap; gap: 12px; }
+.meta-item { display: flex; align-items: center; gap: 4px; font-size: 12px; color: #6b7280; }
+
+/* Footer */
+.startup-card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 4px; }
+
+.industry-badge  { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+.industry-fintech { background: #dbeafe; color: #1d4ed8; }
+
+.connect-btn {
+  padding: 8px 18px; background: #0d6efd; color: #fff;
+  border: none; border-radius: 8px;
+  font-size: 13px; font-weight: 600; font-family: 'Poppins', sans-serif;
+  cursor: pointer; transition: all 0.2s ease;
+}
+.connect-btn:hover { background: #0b5ed7; transform: translateY(-1px); }
+
+/* Empty State */
+.empty-state { grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #94a3b8; font-size: 15px; }
