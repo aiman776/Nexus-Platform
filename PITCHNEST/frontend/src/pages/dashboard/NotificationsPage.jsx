@@ -1,62 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Bell, MessageCircle, UserPlus, DollarSign } from 'lucide-react';
 import { Sidebar } from '../../Components/Sidebar';
 import { useAuth } from '../../store/auth';
 import './NotificationsPage.css';
-
-const entrepreneurNotifications = [
-  {
-    id: 1,
-    type: 'message',
-    user: { name: 'Sarah Johnson', initial: 'S' },
-    content: 'sent you a message about your startup',
-    time: '5 minutes ago',
-    unread: true
-  },
-  {
-    id: 2,
-    type: 'connection',
-    user: { name: 'Michael Rodriguez', initial: 'M' },
-    content: 'accepted your connection request',
-    time: '2 hours ago',
-    unread: true
-  },
-  {
-    id: 3,
-    type: 'investment',
-    user: { name: 'Jennifer Lee', initial: 'J' },
-    content: 'showed interest in investing in your startup',
-    time: '1 day ago',
-    unread: false
-  }
-];
-
-const investorNotifications = [
-  {
-    id: 1,
-    type: 'message',
-    user: { name: 'TechWave AI', initial: 'T' },
-    content: 'sent you a message about their pitch deck',
-    time: '10 minutes ago',
-    unread: true
-  },
-  {
-    id: 2,
-    type: 'connection',
-    user: { name: 'GreenLife Solutions', initial: 'G' },
-    content: 'accepted your collaboration request',
-    time: '3 hours ago',
-    unread: true
-  },
-  {
-    id: 3,
-    type: 'investment',
-    user: { name: 'HealthPulse', initial: 'H' },
-    content: 'updated their financial projections',
-    time: '2 days ago',
-    unread: false
-  }
-];
 
 const getNotificationIcon = (type) => {
   switch (type) {
@@ -68,19 +14,62 @@ const getNotificationIcon = (type) => {
 };
 
 const NotificationsPage = () => {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const role = user?.role || 'entrepreneur';
 
-  // ✅ Role ke mutabik notifications
-  const initialNotifs = role === 'investor' ? investorNotifications : entrepreneurNotifications;
-  const [notifications, setNotifications] = useState(initialNotifs);
+  const [notifications, setNotifications] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // ✅ Mark all as read
+  // ✅ Backend se collaboration requests ko notifications ki tarah show karo
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        // Entrepreneur ke liye received requests
+        // Investor ke liye sent requests
+        const url = role === 'investor'
+          ? 'http://localhost:1000/api/collaborations/sent'
+          : 'http://localhost:1000/api/collaborations/received';
+
+        const res = await fetch(url, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+          // ✅ Requests ko notification format mein convert karo
+          const notifs = (data.requests || []).map(req => ({
+            id: req._id,
+            type: 'investment',
+            user: {
+              name: role === 'investor'
+                ? req.receiver?.username
+                : req.sender?.username,
+              initial: role === 'investor'
+                ? req.receiver?.username?.charAt(0).toUpperCase()
+                : req.sender?.username?.charAt(0).toUpperCase(),
+            },
+            content: role === 'investor'
+              ? `You sent a collaboration request — Status: ${req.status}`
+              : `sent you a collaboration request`,
+            time: new Date(req.createdAt).toLocaleDateString(),
+            unread: req.status === 'pending',
+            status: req.status,
+          }));
+          setNotifications(notifs);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (token) fetchNotifications();
+  }, [token, role]);
+
   const markAllRead = () => {
     setNotifications(notifications.map(n => ({ ...n, unread: false })));
   };
 
-  // ✅ Mark single as read
   const markRead = (id) => {
     setNotifications(notifications.map(n =>
       n.id === id ? { ...n, unread: false } : n
@@ -94,7 +83,6 @@ const NotificationsPage = () => {
       <Sidebar role={role} />
       <main className="dashboard-main">
 
-        {/* Header */}
         <div className="dashboard-header">
           <div>
             <h1>Notifications</h1>
@@ -107,9 +95,10 @@ const NotificationsPage = () => {
           )}
         </div>
 
-        {/* Notification List */}
         <div className="notif-list">
-          {notifications.length === 0 ? (
+          {loading ? (
+            <p>Loading...</p>
+          ) : notifications.length === 0 ? (
             <div className="empty-state">
               <Bell size={40} color="#94a3b8" />
               <p>No notifications yet</p>
@@ -121,15 +110,12 @@ const NotificationsPage = () => {
                 className={`notif-card ${notification.unread ? 'unread' : ''}`}
                 onClick={() => markRead(notification.id)}
               >
-                {/* Avatar */}
                 <div className="notif-avatar">
-                  {notification.user.initial}
+                  {notification.user?.initial}
                 </div>
-
-                {/* Content */}
                 <div className="notif-content">
                   <div className="notif-top">
-                    <span className="notif-name">{notification.user.name}</span>
+                    <span className="notif-name">{notification.user?.name}</span>
                     {notification.unread && (
                       <span className="notif-badge">New</span>
                     )}
@@ -140,16 +126,11 @@ const NotificationsPage = () => {
                     <span>{notification.time}</span>
                   </div>
                 </div>
-
-                {/* Unread dot */}
-                {notification.unread && (
-                  <div className="notif-dot" />
-                )}
+                {notification.unread && <div className="notif-dot" />}
               </div>
             ))
           )}
         </div>
-
       </main>
     </div>
   );

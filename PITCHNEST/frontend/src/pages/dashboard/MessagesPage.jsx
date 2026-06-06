@@ -1,119 +1,109 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Search, Send, MessageCircle } from 'lucide-react';
 import { Sidebar } from '../../Components/Sidebar';
 import { useAuth } from '../../store/auth';
 import './MessagesPage.css';
 
-const entrepreneurConversations = [
-  {
-    id: 1,
-    name: 'Michael Rodriguez',
-    initial: 'M',
-    role: 'Investor',
-    lastMessage: 'I am interested in your startup pitch!',
-    time: '5 min ago',
-    unread: 2,
-  },
-  {
-    id: 2,
-    name: 'Jennifer Lee',
-    initial: 'J',
-    role: 'Investor',
-    lastMessage: 'Can you share your financial projections?',
-    time: '2 hrs ago',
-    unread: 0,
-  },
-  {
-    id: 3,
-    name: 'David Chen',
-    initial: 'D',
-    role: 'Investor',
-    lastMessage: 'Lets schedule a call this week.',
-    time: '1 day ago',
-    unread: 1,
-  },
-];
-
-const investorConversations = [
-  {
-    id: 1,
-    name: 'TechWave AI',
-    initial: 'T',
-    role: 'Startup',
-    lastMessage: 'Thank you for your interest in our startup!',
-    time: '10 min ago',
-    unread: 3,
-  },
-  {
-    id: 2,
-    name: 'GreenLife Solutions',
-    initial: 'G',
-    role: 'Startup',
-    lastMessage: 'We have updated our pitch deck.',
-    time: '1 hr ago',
-    unread: 0,
-  },
-  {
-    id: 3,
-    name: 'HealthPulse',
-    initial: 'H',
-    role: 'Startup',
-    lastMessage: 'Looking forward to our meeting!',
-    time: '3 days ago',
-    unread: 0,
-  },
-];
-
-const sampleMessages = {
-  1: [
-    { id: 1, sender: 'them', text: 'Hi! I saw your startup profile.', time: '10:00 AM' },
-    { id: 2, sender: 'me', text: 'Thank you! Happy to connect.', time: '10:02 AM' },
-    { id: 3, sender: 'them', text: 'I am interested in your startup pitch!', time: '10:05 AM' },
-  ],
-  2: [
-    { id: 1, sender: 'them', text: 'Hello! Can you share your financial projections?', time: '9:00 AM' },
-    { id: 2, sender: 'me', text: 'Sure! I will send them right away.', time: '9:05 AM' },
-  ],
-  3: [
-    { id: 1, sender: 'them', text: 'Lets schedule a call this week.', time: 'Yesterday' },
-    { id: 2, sender: 'me', text: 'Sounds great! Tuesday works for me.', time: 'Yesterday' },
-  ],
-};
-
 const MessagesPage = () => {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const role = user?.role || 'entrepreneur';
 
-  const conversations = role === 'investor' ? investorConversations : entrepreneurConversations;
-
-  const [selectedChat, setSelectedChat] = useState(conversations[0]);
-  const [messages, setMessages] = useState(sampleMessages[conversations[0].id]);
+  const [conversations, setConversations] = useState([]);
+  const [selectedChat, setSelectedChat] = useState(null);
+  const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [search, setSearch] = useState('');
+  const [loading, setLoading] = useState(true);
+  const messagesEndRef = useRef(null);
 
-  const handleSelectChat = (conv) => {
-    setSelectedChat(conv);
-    setMessages(sampleMessages[conv.id] || []);
-  };
+  // ✅ Conversations fetch karo
+  useEffect(() => {
+    const fetchConversations = async () => {
+      try {
+        const res = await fetch('http://localhost:1000/api/messages/conversations', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        if (res.ok) {
+          setConversations(data.conversations || []);
+          if (data.conversations?.length > 0) {
+            setSelectedChat(data.conversations[0]);
+          }
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (token) fetchConversations();
+  }, [token]);
 
-  const handleSend = (e) => {
+  // ✅ Messages fetch karo jab conversation select ho
+  useEffect(() => {
+    const fetchMessages = async () => {
+      if (!selectedChat) return;
+      try {
+        const res = await fetch(
+          `http://localhost:1000/api/messages/conversations/${selectedChat._id}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        const data = await res.json();
+        if (res.ok) setMessages(data.messages || []);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchMessages();
+  }, [selectedChat, token]);
+
+  // ✅ Auto scroll
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  // ✅ Message bhejo
+  const handleSend = async (e) => {
     e.preventDefault();
-    if (!newMessage.trim()) return;
-    setMessages([
-      ...messages,
-      {
-        id: messages.length + 1,
-        sender: 'me',
-        text: newMessage,
-        time: 'Just now',
-      },
-    ]);
-    setNewMessage('');
+    if (!newMessage.trim() || !selectedChat) return;
+    try {
+      const res = await fetch('http://localhost:1000/api/messages/send', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          conversationId: selectedChat._id,
+          text: newMessage,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setMessages(prev => [...prev, data.message]);
+        setNewMessage('');
+        // ✅ Last message update karo
+        setConversations(prev =>
+          prev.map(c => c._id === selectedChat._id
+            ? { ...c, lastMessage: newMessage }
+            : c
+          )
+        );
+      }
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  const filteredConversations = conversations.filter(c =>
-    c.name.toLowerCase().includes(search.toLowerCase())
-  );
+  // ✅ Doosre member ka naam nikalo
+  const getOtherMember = (conversation) => {
+    return conversation.members?.find(m => m._id !== user?._id);
+  };
+
+  const filteredConversations = conversations.filter(c => {
+    const other = getOtherMember(c);
+    return other?.username?.toLowerCase().includes(search.toLowerCase());
+  });
 
   return (
     <div className="messages-wrapper">
@@ -138,54 +128,77 @@ const MessagesPage = () => {
           </div>
 
           <div className="conv-items">
-            {filteredConversations.map(conv => (
-              <div
-                key={conv.id}
-                className={`conv-item ${selectedChat?.id === conv.id ? 'active' : ''}`}
-                onClick={() => handleSelectChat(conv)}
-              >
-                <div className="conv-avatar">{conv.initial}</div>
-                <div className="conv-info">
-                  <div className="conv-top">
-                    <span className="conv-name">{conv.name}</span>
-                    <span className="conv-time">{conv.time}</span>
+            {loading ? (
+              <p style={{ padding: '16px' }}>Loading...</p>
+            ) : filteredConversations.length === 0 ? (
+              <p style={{ padding: '16px', color: '#94a3b8' }}>No conversations yet</p>
+            ) : (
+              filteredConversations.map(conv => {
+                const other = getOtherMember(conv);
+                return (
+                  <div
+                    key={conv._id}
+                    className={`conv-item ${selectedChat?._id === conv._id ? 'active' : ''}`}
+                    onClick={() => setSelectedChat(conv)}
+                  >
+                    <div className="conv-avatar">
+                      {other?.username?.charAt(0).toUpperCase()}
+                    </div>
+                    <div className="conv-info">
+                      <div className="conv-top">
+                        <span className="conv-name">{other?.username}</span>
+                        <span className="conv-time">
+                          {conv.updatedAt
+                            ? new Date(conv.updatedAt).toLocaleDateString()
+                            : ''}
+                        </span>
+                      </div>
+                      <div className="conv-bottom">
+                        <span className="conv-last">
+                          {conv.lastMessage || 'No messages yet'}
+                        </span>
+                        {conv.unreadCount > 0 && (
+                          <span className="conv-unread">{conv.unreadCount}</span>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                  <div className="conv-bottom">
-                    <span className="conv-last">{conv.lastMessage}</span>
-                    {conv.unread > 0 && (
-                      <span className="conv-unread">{conv.unread}</span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
+                );
+              })
+            )}
           </div>
         </div>
 
         {/* Right - Chat Area */}
         {selectedChat ? (
           <div className="chat-area">
-
             <div className="chat-header">
-              <div className="conv-avatar">{selectedChat.initial}</div>
+              <div className="conv-avatar">
+                {getOtherMember(selectedChat)?.username?.charAt(0).toUpperCase()}
+              </div>
               <div>
-                <p className="chat-name">{selectedChat.name}</p>
-                <p className="chat-role">{selectedChat.role}</p>
+                <p className="chat-name">{getOtherMember(selectedChat)?.username}</p>
+                <p className="chat-role">{getOtherMember(selectedChat)?.role}</p>
               </div>
             </div>
 
             <div className="chat-messages">
               {messages.map(msg => (
                 <div
-                  key={msg.id}
-                  className={`msg-bubble-wrap ${msg.sender === 'me' ? 'me' : 'them'}`}
+                  key={msg._id}
+                  className={`msg-bubble-wrap ${msg.sender?._id === user?._id || msg.sender === user?._id ? 'me' : 'them'}`}
                 >
-                  <div className={`msg-bubble ${msg.sender === 'me' ? 'bubble-me' : 'bubble-them'}`}>
+                  <div className={`msg-bubble ${msg.sender?._id === user?._id || msg.sender === user?._id ? 'bubble-me' : 'bubble-them'}`}>
                     <p>{msg.text}</p>
-                    <span className="msg-time">{msg.time}</span>
+                    <span className="msg-time">
+                      {msg.createdAt
+                        ? new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                        : 'Just now'}
+                    </span>
                   </div>
                 </div>
               ))}
+              <div ref={messagesEndRef} />
             </div>
 
             <form className="chat-input-row" onSubmit={handleSend}>

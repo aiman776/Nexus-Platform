@@ -9,35 +9,25 @@ const UserSchema = new mongoose.Schema({
     age: { type: Number },
     phone: { type: String, required: true },
     isadmin: { type: Boolean, default: false },
-
-    // ✅ Role field
     role: {
         type: String,
         enum: ["entrepreneur", "investor"],
         default: "entrepreneur",
     },
-
-    // ✅ Profile fields add ki
     bio: { type: String, default: "" },
-    profilePicture: { type: String, default: "" },
     location: { type: String, default: "" },
     website: { type: String, default: "" },
     linkedin: { type: String, default: "" },
 });
 
-UserSchema.pre("save", async function(next) {
+// ✅ Fix: next parameter hata diya
+UserSchema.pre("save", async function() {
     const user = this;
-    if (!user.isModified("password")) {
-        return next(); // ✅ return lagaya warna continue hota tha
-    }
-    try {
-        const saltround = await bcrypt.genSalt(10);
-        const hash_password = await bcrypt.hash(user.password, saltround);
-        user.password = hash_password;
-        next();
-    } catch (error) {
-        next(error);
-    }
+    if (!user.isModified("password")) return;
+
+    const saltround = await bcrypt.genSalt(10);
+    const hash_password = await bcrypt.hash(user.password, saltround);
+    user.password = hash_password;
 });
 
 UserSchema.methods.generateToken = async function () {

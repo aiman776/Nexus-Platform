@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Bell, Users, Calendar, TrendingUp, AlertCircle, PlusCircle } from 'lucide-react';
 import { Sidebar } from '../../Components/Sidebar';
@@ -6,65 +6,59 @@ import { useAuth } from '../../store/auth';
 import './Dashboard.css';
 import './EntrepreneurDashboard.css';
 
-const recommendedInvestors = [
-  {
-    id: '1',
-    name: 'Michael Chen',
-    initial: 'M',
-    company: 'VC Innovate',
-    interests: ['AI', 'FinTech', 'SaaS'],
-    stage: 'Seed, Series A',
-    investments: 12,
-  },
-  {
-    id: '2',
-    name: 'Emily Roberts',
-    initial: 'E',
-    company: 'GreenFund Capital',
-    interests: ['CleanTech', 'Energy'],
-    stage: 'Series A, Series B',
-    investments: 8,
-  },
-  {
-    id: '3',
-    name: 'James Patel',
-    initial: 'J',
-    company: 'HealthVentures',
-    interests: ['HealthTech', 'BioTech'],
-    stage: 'Pre-seed, Seed',
-    investments: 6,
-  },
-];
-
 const EntrepreneurDashboard = () => {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const role = user?.role || 'entrepreneur';
 
-  const [requests, setRequests] = useState([
-    {
-      id: '1',
-      investorName: 'Michael Chen',
-      initial: 'M',
-      company: 'VC Innovate',
-      message: 'I am interested in your startup. Would love to discuss further.',
-      status: 'pending',
-      time: '2 hours ago',
-    },
-    {
-      id: '2',
-      investorName: 'Emily Roberts',
-      initial: 'E',
-      company: 'GreenFund Capital',
-      message: 'Your pitch deck looks promising. Let us schedule a call.',
-      status: 'pending',
-      time: '1 day ago',
-    },
-  ]);
+  const [requests, setRequests] = useState([]);
+  const [investors, setInvestors] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleStatus = (id, status) => {
-    setRequests(prev =>
-      prev.map(req => req.id === id ? { ...req, status } : req)
-    );
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // ✅ Collaboration requests fetch karo
+        const reqRes = await fetch('http://localhost:1000/api/collaborations/received', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const reqData = await reqRes.json();
+        if (reqRes.ok) setRequests(reqData.requests || []);
+
+        // ✅ Recommended investors fetch karo
+        const invRes = await fetch('http://localhost:1000/api/investors', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const invData = await invRes.json();
+        if (invRes.ok) setInvestors(invData.investors?.slice(0, 3) || []);
+
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (token) fetchData();
+  }, [token]);
+
+  // ✅ Accept/Reject backend pe update karo
+  const handleStatus = async (id, status) => {
+    try {
+      const res = await fetch(`http://localhost:1000/api/collaborations/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status }),
+      });
+      if (res.ok) {
+        setRequests(prev =>
+          prev.map(req => req._id === id ? { ...req, status } : req)
+        );
+      }
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const pendingCount = requests.filter(r => r.status === 'pending').length;
@@ -108,14 +102,14 @@ const EntrepreneurDashboard = () => {
             <div className="stat-icon orange"><Calendar size={22} /></div>
             <div>
               <p className="stat-label">Upcoming Meetings</p>
-              <h2 className="stat-value">2</h2>
+              <h2 className="stat-value">0</h2>
             </div>
           </div>
           <div className="stat-card">
             <div className="stat-icon green"><TrendingUp size={22} /></div>
             <div>
               <p className="stat-label">Profile Views</p>
-              <h2 className="stat-value">24</h2>
+              <h2 className="stat-value">0</h2>
             </div>
           </div>
         </div>
@@ -131,7 +125,9 @@ const EntrepreneurDashboard = () => {
                 <span className="badge">{pendingCount} pending</span>
               </div>
 
-              {requests.length === 0 ? (
+              {loading ? (
+                <p>Loading...</p>
+              ) : requests.length === 0 ? (
                 <div className="empty-state">
                   <div className="empty-icon"><AlertCircle size={24} /></div>
                   <p>No collaboration requests yet</p>
@@ -140,12 +136,14 @@ const EntrepreneurDashboard = () => {
               ) : (
                 <div className="collab-list">
                   {requests.map(req => (
-                    <div key={req.id} className="collab-card">
+                    <div key={req._id} className="collab-card">
                       <div className="collab-top">
-                        <div className="collab-avatar">{req.initial}</div>
+                        <div className="collab-avatar">
+                          {req.sender?.username?.charAt(0).toUpperCase()}
+                        </div>
                         <div className="collab-info">
-                          <h3>{req.investorName}</h3>
-                          <p>{req.company}</p>
+                          <h3>{req.sender?.username}</h3>
+                          <p>{req.sender?.email}</p>
                         </div>
                         <span className={`collab-status status-${req.status}`}>
                           {req.status}
@@ -153,18 +151,20 @@ const EntrepreneurDashboard = () => {
                       </div>
                       <p className="collab-message">{req.message}</p>
                       <div className="collab-footer">
-                        <span className="collab-time">{req.time}</span>
+                        <span className="collab-time">
+                          {new Date(req.createdAt).toLocaleDateString()}
+                        </span>
                         {req.status === 'pending' && (
                           <div className="collab-actions">
                             <button
                               className="collab-btn accept"
-                              onClick={() => handleStatus(req.id, 'accepted')}
+                              onClick={() => handleStatus(req._id, 'accepted')}
                             >
                               Accept
                             </button>
                             <button
                               className="collab-btn reject"
-                              onClick={() => handleStatus(req.id, 'rejected')}
+                              onClick={() => handleStatus(req._id, 'rejected')}
                             >
                               Decline
                             </button>
@@ -186,31 +186,41 @@ const EntrepreneurDashboard = () => {
                 <Link to="/find-investors" className="view-all-link">View all</Link>
               </div>
 
-              <div className="rec-list">
-                {recommendedInvestors.map(investor => (
-                  <div key={investor.id} className="rec-card">
-                    <div className="rec-top">
-                      <div className="rec-avatar">{investor.initial}</div>
-                      <div>
-                        <h3>{investor.name}</h3>
-                        <p>{investor.company}</p>
+              {loading ? (
+                <p>Loading...</p>
+              ) : investors.length === 0 ? (
+                <div className="empty-state">
+                  <p>No investors found</p>
+                </div>
+              ) : (
+                <div className="rec-list">
+                  {investors.map(investor => (
+                    <div key={investor._id} className="rec-card">
+                      <div className="rec-top">
+                        <div className="rec-avatar">
+                          {investor.name?.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <h3>{investor.name}</h3>
+                          <p>{investor.company}</p>
+                        </div>
                       </div>
+                      <div className="rec-tags">
+                        {investor.investmentInterests?.map(tag => (
+                          <span key={tag} className="rec-tag">{tag}</span>
+                        ))}
+                      </div>
+                      <div className="rec-meta">
+                        <span>📈 {investor.investmentStage?.join(', ')}</span>
+                        <span>💼 {investor.totalInvestments} investments</span>
+                      </div>
+                      <Link to={`/investor/${investor._id}`}>
+                        <button className="rec-btn">View Profile</button>
+                      </Link>
                     </div>
-                    <div className="rec-tags">
-                      {investor.interests.map(tag => (
-                        <span key={tag} className="rec-tag">{tag}</span>
-                      ))}
-                    </div>
-                    <div className="rec-meta">
-                      <span>📈 {investor.stage}</span>
-                      <span>💼 {investor.investments} investments</span>
-                    </div>
-                    <Link to={`/investor/${investor.id}`}>
-                      <button className="rec-btn">View Profile</button>
-                    </Link>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>

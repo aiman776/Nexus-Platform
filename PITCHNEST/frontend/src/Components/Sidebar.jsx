@@ -32,7 +32,8 @@ export const Sidebar = () => {
 
   const investorLinks = [
     { to: "/dashboard/investor",  icon: <LayoutDashboard size={20} />, label: "Dashboard" },
-    { to: `/investor/${userId}`,  icon: <DollarSign size={20} />,      label: "My Portfolio" },
+   // ✅ Sahi - mine route use karo
+{ to: `/investor/mine`, icon: <DollarSign size={20} />, label: "My Portfolio" },
     { to: "/find-startups",       icon: <Users size={20} />,           label: "Find Startups" },
     { to: "/messages",            icon: <MessageCircle size={20} />,   label: "Messages" },
     { to: "/notifications",       icon: <Bell size={20} />,            label: "Notifications" },

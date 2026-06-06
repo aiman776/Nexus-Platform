@@ -1,6 +1,5 @@
 const { z } = require("zod");
 
-// Create an object schema for validation
 const signup_schema = z.object({
   username: z
     .string({ required_error: "Username is required" })
@@ -32,5 +31,13 @@ const signup_schema = z.object({
     .trim()
     .min(1, { message: "Age must be at least 1 digit" })
     .max(3, { message: "Age must not be more than 3 digits" }),
+
+  // ✅ Role field add kiya
+  role: z
+    .enum(["entrepreneur", "investor"], {
+      message: "Role must be entrepreneur or investor"
+    })
+    .default("entrepreneur"),
 });
-module.exports=signup_schema;
+
+module.exports = signup_schema;

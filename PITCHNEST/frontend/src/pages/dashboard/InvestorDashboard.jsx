@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Users, PieChart, Filter, Search, PlusCircle, MapPin } from 'lucide-react';
 import { Sidebar } from '../../Components/Sidebar';
@@ -6,85 +6,63 @@ import { useAuth } from '../../store/auth';
 import './Dashboard.css';
 import './InvestorDashboard.css';
 
-const entrepreneursData = [
-  {
-    id: '1',
-    name: 'Sarah Johnson',
-    initial: 'S',
-    startupName: 'TechWave AI',
-    industry: 'FinTech',
-    location: 'San Francisco, CA',
-    fundingNeeded: '$1.5M',
-    stage: 'Series A',
-    pitchSummary: 'AI-powered financial analytics platform for small businesses.',
-    tags: ['AI', 'Finance', 'B2B'],
-  },
-  {
-    id: '2',
-    name: 'David Chen',
-    initial: 'D',
-    startupName: 'GreenLife Solutions',
-    industry: 'CleanTech',
-    location: 'Portland, OR',
-    fundingNeeded: '$2M',
-    stage: 'Seed',
-    pitchSummary: 'Sustainable energy solutions for residential and commercial use.',
-    tags: ['Green', 'Energy', 'Sustainability'],
-  },
-  {
-    id: '3',
-    name: 'Maya Patel',
-    initial: 'M',
-    startupName: 'HealthPulse',
-    industry: 'HealthTech',
-    location: 'Boston, MA',
-    fundingNeeded: '$800K',
-    stage: 'Pre-seed',
-    pitchSummary: 'Remote patient monitoring platform using wearable technology.',
-    tags: ['Health', 'IoT', 'B2C'],
-  },
-  {
-    id: '4',
-    name: 'James Wilson',
-    initial: 'J',
-    startupName: 'AgriSmart',
-    industry: 'AgTech',
-    location: 'Austin, TX',
-    fundingNeeded: '$3M',
-    stage: 'Series A',
-    pitchSummary: 'Smart farming solutions using IoT and machine learning.',
-    tags: ['Agriculture', 'IoT', 'ML'],
-  },
-];
-
-const allIndustries = [...new Set(entrepreneursData.map(e => e.industry))];
-
 const InvestorDashboard = () => {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const role = user?.role || 'investor';
 
+  const [startups, setStartups] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedIndustries, setSelectedIndustries] = useState([]);
-  const [connections] = useState(0);
+  const [connections, setConnections] = useState(0);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // ✅ Startups fetch karo
+        const res = await fetch('http://localhost:1000/api/startups', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        if (res.ok) setStartups(data.startups || []);
+
+        // ✅ Accepted collaborations count karo
+        const collabRes = await fetch('http://localhost:1000/api/collaborations/sent', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const collabData = await collabRes.json();
+        if (collabRes.ok) {
+          const accepted = collabData.requests?.filter(r => r.status === 'accepted').length || 0;
+          setConnections(accepted);
+        }
+
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (token) fetchData();
+  }, [token]);
+
+  const allIndustries = [...new Set(startups.map(s => s.industry).filter(Boolean))];
 
   const toggleIndustry = (industry) => {
     setSelectedIndustries(prev =>
-      prev.includes(industry)
-        ? prev.filter(i => i !== industry)
-        : [...prev, industry]
+      prev.includes(industry) ? prev.filter(i => i !== industry) : [...prev, industry]
     );
   };
 
-  const filteredEntrepreneurs = entrepreneursData.filter(e => {
+  const filteredStartups = startups.filter(s => {
     const matchSearch =
       searchQuery === '' ||
-      e.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      e.startupName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      e.industry.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      e.pitchSummary.toLowerCase().includes(searchQuery.toLowerCase());
+      s.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      s.startupName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      s.industry?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      s.pitchSummary?.toLowerCase().includes(searchQuery.toLowerCase());
 
     const matchIndustry =
-      selectedIndustries.length === 0 || selectedIndustries.includes(e.industry);
+      selectedIndustries.length === 0 || selectedIndustries.includes(s.industry);
 
     return matchSearch && matchIndustry;
   });
@@ -94,7 +72,6 @@ const InvestorDashboard = () => {
       <Sidebar role={role} />
       <main className="dashboard-main">
 
-        {/* Header */}
         <div className="dashboard-header">
           <div>
             <h1>Discover Startups</h1>
@@ -118,7 +95,6 @@ const InvestorDashboard = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-
           <div className="id-filters">
             <Filter size={16} color="#64748b" />
             <span>Filter by:</span>
@@ -140,7 +116,7 @@ const InvestorDashboard = () => {
             <div className="stat-icon blue"><Users size={20} /></div>
             <div>
               <p className="stat-label">Total Startups</p>
-              <h2 className="stat-value">{entrepreneursData.length}</h2>
+              <h2 className="stat-value">{startups.length}</h2>
             </div>
           </div>
           <div className="stat-card">
@@ -165,7 +141,9 @@ const InvestorDashboard = () => {
             <h2>Featured Startups</h2>
           </div>
 
-          {filteredEntrepreneurs.length === 0 ? (
+          {loading ? (
+            <p>Loading...</p>
+          ) : filteredStartups.length === 0 ? (
             <div className="empty-state">
               <p>No startups match your filters</p>
               <button
@@ -177,35 +155,33 @@ const InvestorDashboard = () => {
             </div>
           ) : (
             <div className="id-startups-grid">
-              {filteredEntrepreneurs.map(e => (
-                <div key={e.id} className="id-startup-card">
+              {filteredStartups.map(s => (
+                <div key={s._id} className="id-startup-card">
                   <div className="id-card-top">
-                    <div className="id-card-avatar">{e.initial}</div>
+                    <div className="id-card-avatar">
+                      {s.name?.charAt(0).toUpperCase()}
+                    </div>
                     <div>
-                      <h3>{e.startupName}</h3>
-                      <p>{e.name}</p>
+                      <h3>{s.startupName}</h3>
+                      <p>{s.name}</p>
                     </div>
                   </div>
-
-                  <p className="id-card-pitch">{e.pitchSummary}</p>
-
+                  <p className="id-card-pitch">{s.pitchSummary}</p>
                   <div className="id-card-tags">
-                    {e.tags.map(tag => (
+                    {s.tags?.map(tag => (
                       <span key={tag} className="id-tag">{tag}</span>
                     ))}
                   </div>
-
                   <div className="id-card-meta">
-                    <span><MapPin size={13} /> {e.location}</span>
-                    <span>💰 {e.fundingNeeded}</span>
-                    <span>📈 {e.stage}</span>
+                    <span><MapPin size={13} /> {s.location}</span>
+                    <span>💰 {s.fundingNeeded}</span>
+                    <span>📈 {s.stage}</span>
                   </div>
-
                   <div className="id-card-footer">
-                    <span className={`id-industry-badge id-${e.industry.toLowerCase().replace(' ', '')}`}>
-                      {e.industry}
+                    <span className={`id-industry-badge id-${s.industry?.toLowerCase().replace(' ', '')}`}>
+                      {s.industry}
                     </span>
-                    <Link to={`/entrepreneur/${e.id}`}>
+                    <Link to={`/entrepreneur/${s.user?._id || s.user}`}>
                       <button className="id-view-btn">View Profile</button>
                     </Link>
                   </div>
@@ -214,7 +190,6 @@ const InvestorDashboard = () => {
             </div>
           )}
         </div>
-
       </main>
     </div>
   );

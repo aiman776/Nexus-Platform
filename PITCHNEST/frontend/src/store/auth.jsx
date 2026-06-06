@@ -20,6 +20,7 @@ export const AuthProvider = ({ children }) => {
     setToken("");
     setUser(null);
     localStorage.removeItem("token");
+    localStorage.removeItem("role"); // ✅ role bhi clear karo
   };
 
   const authFetch = async (url, options = {}) => {
@@ -37,14 +38,16 @@ export const AuthProvider = ({ children }) => {
     const fetchUser = async () => {
       if (!token) return;
       try {
-        // ✅ Fix: sahi URL
-        const res = await fetch("http://localhost:1000/api/profile", {
+        const res = await fetch("http://localhost:1000/api/auth/profile", { // ✅ sahi URL
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
         const data = await res.json();
-        if (res.ok) setUser(data);
+        if (res.ok) {
+          setUser(data);
+          localStorage.setItem("role", data.role); // ✅ role save karo
+        }
       } catch (err) {
         console.error("User fetch error:", err);
       }
