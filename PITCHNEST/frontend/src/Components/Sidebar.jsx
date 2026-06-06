@@ -4,7 +4,7 @@ import {
   Bell, FileText, Settings, HelpCircle,
   DollarSign, HandshakeIcon
 } from "lucide-react";
-import { useAuth } from "../store/auth"; // ✅ add karo
+import { useAuth } from "../store/auth";
 import "./Sidebar.css";
 
 const settingsLinks = [
@@ -12,27 +12,32 @@ const settingsLinks = [
   { to: "/help", icon: <HelpCircle size={20} />, label: "Help & Support" },
 ];
 
-export const Sidebar = ({ role }) => {
-  const { user } = useAuth(); // ✅ user lo
-  const userId = user?._id || "1"; // ✅ real id ya fallback
+export const Sidebar = () => {
+  const { user } = useAuth();
 
-  // ✅ Role based links with real user id
+  // ✅ Jab tak user load nahi hota wait karo
+  if (!user) return <aside className="sidebar"></aside>;
+
+  const role = user.role; // ✅ Direct user.role - koi fallback nahi
+  const userId = user._id || user.id;
+
   const entrepreneurLinks = [
     { to: "/dashboard/entrepreneur", icon: <LayoutDashboard size={20} />, label: "Dashboard" },
-    { to: `/entrepreneur/${userId}`, icon: <Briefcase size={20} />, label: "My Startup" },
-    { to: "/find-investors", icon: <Users size={20} />, label: "Find Investors" },
-    { to: "/messages", icon: <MessageCircle size={20} />, label: "Messages" },
-    { to: "/notifications", icon: <Bell size={20} />, label: "Notifications" },
-    { to: "/documents", icon: <FileText size={20} />, label: "Documents" },
+    { to: `/entrepreneur/${userId}`,  icon: <Briefcase size={20} />,       label: "My Startup" },
+    { to: "/find-investors",          icon: <Users size={20} />,            label: "Find Investors" },
+    { to: "/messages",                icon: <MessageCircle size={20} />,    label: "Messages" },
+    { to: "/notifications",           icon: <Bell size={20} />,             label: "Notifications" },
+    { to: "/documents",               icon: <FileText size={20} />,         label: "Documents" },
   ];
-const investorLinks = [
-  { to: "/dashboard/investor", icon: <LayoutDashboard size={20} />, label: "Dashboard" },
-  { to: `/investor/${userId}`, icon: <DollarSign size={20} />, label: "My Portfolio" }, // ✅ investor hona chahiye
-  { to: "/find-startups", icon: <Users size={20} />, label: "Find Startups" },
-  { to: "/messages", icon: <MessageCircle size={20} />, label: "Messages" },
-  { to: "/notifications", icon: <Bell size={20} />, label: "Notifications" },
-  { to: "/deals", icon: <HandshakeIcon size={20} />, label: "Deals" },
-];
+
+  const investorLinks = [
+    { to: "/dashboard/investor",  icon: <LayoutDashboard size={20} />, label: "Dashboard" },
+    { to: `/investor/${userId}`,  icon: <DollarSign size={20} />,      label: "My Portfolio" },
+    { to: "/find-startups",       icon: <Users size={20} />,           label: "Find Startups" },
+    { to: "/messages",            icon: <MessageCircle size={20} />,   label: "Messages" },
+    { to: "/notifications",       icon: <Bell size={20} />,            label: "Notifications" },
+    { to: "/deals",               icon: <HandshakeIcon size={20} />,   label: "Deals" },
+  ];
 
   const links = role === "investor" ? investorLinks : entrepreneurLinks;
 

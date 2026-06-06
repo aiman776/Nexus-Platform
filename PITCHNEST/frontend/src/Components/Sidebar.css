@@ -81,3 +81,8 @@
   font-size: 0.78rem;
   color: #2563eb;
 }
+.sidebar {
+  position: fixed;  
+  top: 64px;
+  left: 0;
+}

@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import "./Navbar.css";
 import { useAuth } from "../store/auth";
 import { useState } from "react";
@@ -7,16 +7,23 @@ import {
 } from "lucide-react";
 
 export const Navbar = () => {
-  const { isLoggedIn, user } = useAuth();
+  const { isLoggedIn, user, LogoutUser } = useAuth(); // ✅ LogoutUser add kiya
   const [menuOpen, setMenuOpen] = useState(false);
+  const navigate = useNavigate(); // ✅ navigate add kiya
 
   const firstLetter = user?.username?.charAt(0).toUpperCase() || "U";
   const username = user?.username || "";
 
-  // ✅ Role ke mutabik dashboard link
   const dashboardLink = user?.role === "investor"
     ? "/dashboard/investor"
     : "/dashboard/entrepreneur";
+
+  // ✅ Logout handler
+  const handleLogout = (e) => {
+    e.preventDefault();
+    LogoutUser();
+    navigate("/login");
+  };
 
   return (
     <header>
@@ -37,7 +44,6 @@ export const Navbar = () => {
           <ul onClick={() => setMenuOpen(false)}>
             {isLoggedIn ? (
               <>
-                {/* ✅ Role based dashboard link */}
                 <li>
                   <NavLink to={dashboardLink}>
                     <LayoutDashboard size={17} /> Dashboard
@@ -58,10 +64,11 @@ export const Navbar = () => {
                     <User size={17} /> Profile
                   </NavLink>
                 </li>
+                {/* ✅ Fix: /logout route ki jagah function call */}
                 <li>
-                  <NavLink to="/logout">
+                  <a href="#" onClick={handleLogout}>
                     <LogOut size={17} /> Logout
-                  </NavLink>
+                  </a>
                 </li>
                 <li className="avatar-wrapper">
                   <div className="avatar-circle">{firstLetter}</div>

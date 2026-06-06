@@ -1,14 +1,17 @@
 const express = require("express");
 const cors = require("cors");
-
 const app = express();
 
 // ✅ Routes import
 const authRouter = require("./routes/auth_router");
 const contactroute = require("./routes/contact_router");
-
 const connectDB = require("./utils/db");
 const errorMiddleware = require("./middlewares/error-middleware");
+const profileRoutes = require("./routes/profile-routes");
+const startupRoutes = require('./routes/startup-routes');
+const investorRoutes = require('./routes/investor-routes');
+const messageRoutes = require('./routes/message-routes');
+const collaborationRoutes = require('./routes/collaboration-routes');
 
 // ✅ CORS Options
 const corsOptions = {
@@ -24,7 +27,11 @@ app.use(express.json());
 // ✅ Routes
 app.use("/api/auth", authRouter);
 app.use("/api/form", contactroute);
-
+app.use("/api/profile", profileRoutes);
+app.use('/api/startups', startupRoutes);
+app.use('/api/investors', investorRoutes);
+app.use('/api/messages', messageRoutes);
+app.use('/api/collaborations', collaborationRoutes);
 // ✅ Test Route
 app.get("/", (req, res) => {
   res.send("Backend is running successfully");

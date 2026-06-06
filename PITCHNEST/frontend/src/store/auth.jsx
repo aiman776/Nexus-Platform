@@ -7,7 +7,6 @@ export const AuthProvider = ({ children }) => {
     return localStorage.getItem("token") || "";
   });
 
-  // ✅ User state add ki
   const [user, setUser] = useState(null);
 
   const storeTokenInLS = (serverToken) => {
@@ -19,7 +18,7 @@ export const AuthProvider = ({ children }) => {
 
   const LogoutUser = () => {
     setToken("");
-    setUser(null); // ✅ Logout pe user clear
+    setUser(null);
     localStorage.removeItem("token");
   };
 
@@ -38,7 +37,8 @@ export const AuthProvider = ({ children }) => {
     const fetchUser = async () => {
       if (!token) return;
       try {
-        const res = await fetch("http://localhost:1000/api/auth/profile", {
+        // ✅ Fix: sahi URL
+        const res = await fetch("http://localhost:1000/api/profile", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -50,7 +50,7 @@ export const AuthProvider = ({ children }) => {
       }
     };
     fetchUser();
-  }, [token]); // ✅ Token change hone pe dobara fetch
+  }, [token]);
 
   return (
     <AuthContext.Provider

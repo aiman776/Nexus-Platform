@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 const UserSchema = new mongoose.Schema({
     username: { type: String, required: true },
@@ -8,29 +9,36 @@ const UserSchema = new mongoose.Schema({
     age: { type: Number },
     phone: { type: String, required: true },
     isadmin: { type: Boolean, default: false },
-    // ✅ Role field add ki
+
+    // ✅ Role field
     role: {
         type: String,
         enum: ["entrepreneur", "investor"],
         default: "entrepreneur",
     },
+
+    // ✅ Profile fields add ki
+    bio: { type: String, default: "" },
+    profilePicture: { type: String, default: "" },
+    location: { type: String, default: "" },
+    website: { type: String, default: "" },
+    linkedin: { type: String, default: "" },
 });
 
 UserSchema.pre("save", async function(next) {
     const user = this;
     if (!user.isModified("password")) {
-        next();
+        return next(); // ✅ return lagaya warna continue hota tha
     }
     try {
         const saltround = await bcrypt.genSalt(10);
         const hash_password = await bcrypt.hash(user.password, saltround);
         user.password = hash_password;
+        next();
     } catch (error) {
         next(error);
     }
 });
-
-const jwt = require("jsonwebtoken");
 
 UserSchema.methods.generateToken = async function () {
     try {
@@ -39,7 +47,7 @@ UserSchema.methods.generateToken = async function () {
                 userid: this._id.toString(),
                 email: this.email,
                 isadmin: this.isadmin,
-                role: this.role, // ✅ Role token mein bhi
+                role: this.role,
             },
             process.env.JWT_SECRET_KEY,
             { expiresIn: "30d" }
@@ -53,5 +61,5 @@ UserSchema.methods.comparePassword = async function (password) {
     return bcrypt.compare(password, this.password);
 };
 
-const User = new mongoose.model("User", UserSchema);
+const User = mongoose.model("User", UserSchema);
 module.exports = User;
