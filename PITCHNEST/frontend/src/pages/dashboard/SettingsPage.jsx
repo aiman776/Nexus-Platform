@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { User, Lock, Bell, Globe, Palette, CreditCard } from 'lucide-react';
 import { Sidebar } from '../../Components/Sidebar';
 import { useAuth } from '../../store/auth';
 import './SettingsPage.css';
 
 const SettingsPage = () => {
-  const { user } = useAuth();
+  const { user, token, storeTokenInLS } = useAuth();
   const role = user?.role || 'entrepreneur';
 
   const [activeTab, setActiveTab] = useState('profile');
@@ -13,8 +13,10 @@ const SettingsPage = () => {
   const [profileData, setProfileData] = useState({
     username: user?.username || "",
     email: user?.email || "",
-    location: "",
-    bio: "",
+    location: user?.location || "",
+    bio: user?.bio || "",
+    website: user?.website || "",
+    linkedin: user?.linkedin || "",
   });
 
   const [passwordData, setPasswordData] = useState({
@@ -22,6 +24,20 @@ const SettingsPage = () => {
     newPassword: "",
     confirmPassword: "",
   });
+
+  // ✅ User data load hone pe update karo
+  useEffect(() => {
+    if (user) {
+      setProfileData({
+        username: user.username || "",
+        email: user.email || "",
+        location: user.location || "",
+        bio: user.bio || "",
+        website: user.website || "",
+        linkedin: user.linkedin || "",
+      });
+    }
+  }, [user]);
 
   const handleProfileInput = (e) => {
     const { name, value } = e.target;
@@ -33,19 +49,66 @@ const SettingsPage = () => {
     setPasswordData({ ...passwordData, [name]: value });
   };
 
-  const handleProfileSave = (e) => {
+  // ✅ Profile update — backend se connect
+  const handleProfileSave = async (e) => {
     e.preventDefault();
-    alert("Profile updated successfully!");
+    try {
+      const res = await fetch('http://localhost:1000/api/profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          username: profileData.username,
+          location: profileData.location,
+          bio: profileData.bio,
+          website: profileData.website,
+          linkedin: profileData.linkedin,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        alert('Profile updated successfully!');
+      } else {
+        alert(data.message || 'Update failed');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Server error');
+    }
   };
 
-  const handlePasswordUpdate = (e) => {
+  // ✅ Password update — backend se connect
+  const handlePasswordUpdate = async (e) => {
     e.preventDefault();
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      alert("Passwords do not match!");
+      alert('Passwords do not match!');
       return;
     }
-    alert("Password updated successfully!");
-    setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" });
+    try {
+      const res = await fetch('http://localhost:1000/api/auth/change-password', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          currentPassword: passwordData.currentPassword,
+          newPassword: passwordData.newPassword,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        alert('Password updated successfully!');
+        setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+      } else {
+        alert(data.message || 'Password update failed');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Server error');
+    }
   };
 
   const navItems = [
@@ -62,7 +125,6 @@ const SettingsPage = () => {
       <Sidebar role={role} />
       <main className="dashboard-main">
 
-        {/* Header */}
         <div className="settings-header">
           <h1>Settings</h1>
           <p>Manage your account preferences and settings</p>
@@ -70,7 +132,6 @@ const SettingsPage = () => {
 
         <div className="settings-layout">
 
-          {/* Left Nav */}
           <div className="settings-nav-card">
             <nav>
               {navItems.map((item) => (
@@ -86,7 +147,6 @@ const SettingsPage = () => {
             </nav>
           </div>
 
-          {/* Right Content */}
           <div className="settings-content">
 
             {/* Profile Settings */}
@@ -94,7 +154,6 @@ const SettingsPage = () => {
               <div className="settings-section">
                 <h2>Profile Settings</h2>
 
-                {/* Avatar */}
                 <div className="avatar-row">
                   <div className="avatar-big">
                     {user?.username?.charAt(0).toUpperCase() || "U"}
@@ -114,8 +173,6 @@ const SettingsPage = () => {
                         name="username"
                         value={profileData.username}
                         onChange={handleProfileInput}
-                        readOnly
-                        className="input-readonly"
                       />
                     </div>
                     <div className="form-group">
@@ -124,7 +181,6 @@ const SettingsPage = () => {
                         type="email"
                         name="email"
                         value={profileData.email}
-                        onChange={handleProfileInput}
                         readOnly
                         className="input-readonly"
                       />
@@ -148,6 +204,26 @@ const SettingsPage = () => {
                         placeholder="Your city, country"
                       />
                     </div>
+                    <div className="form-group">
+                      <label>Website</label>
+                      <input
+                        type="text"
+                        name="website"
+                        value={profileData.website}
+                        onChange={handleProfileInput}
+                        placeholder="https://yourwebsite.com"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>LinkedIn</label>
+                      <input
+                        type="text"
+                        name="linkedin"
+                        value={profileData.linkedin}
+                        onChange={handleProfileInput}
+                        placeholder="linkedin.com/in/username"
+                      />
+                    </div>
                   </div>
 
                   <div className="form-group">
@@ -169,12 +245,10 @@ const SettingsPage = () => {
               </div>
             )}
 
-            {/* Security Settings */}
+            {/* Security */}
             {activeTab === 'security' && (
               <div className="settings-section">
                 <h2>Security Settings</h2>
-
-                {/* 2FA */}
                 <div className="security-row">
                   <div>
                     <h3>Two-Factor Authentication</h3>
@@ -183,10 +257,7 @@ const SettingsPage = () => {
                   </div>
                   <button className="settings-btn outline">Enable</button>
                 </div>
-
                 <div className="divider" />
-
-                {/* Change Password */}
                 <h3>Change Password</h3>
                 <form onSubmit={handlePasswordUpdate}>
                   <div className="form-group">
