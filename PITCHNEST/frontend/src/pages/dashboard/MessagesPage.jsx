@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
+import { Video } from 'lucide-react'; // ✅ Import add karo
+
 import { Search, Send, MessageCircle } from 'lucide-react';
 import { Sidebar } from '../../Components/Sidebar';
 import { useAuth } from '../../store/auth';
@@ -180,6 +182,14 @@ const MessagesPage = () => {
                 <p className="chat-name">{getOtherMember(selectedChat)?.username}</p>
                 <p className="chat-role">{getOtherMember(selectedChat)?.role}</p>
               </div>
+               {/* ✅ Video call button */}
+ {/* ✅ selectedChat ki ID room ID banega */}
+<button
+  className="video-call-btn"
+  onClick={() => navigate(`/video-call/${selectedChat.id}`)}
+>
+  <Video size={20} /> Video Call
+</button>
             </div>
 
             <div className="chat-messages">

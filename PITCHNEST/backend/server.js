@@ -1,6 +1,17 @@
 const express = require("express");
 const cors = require("cors");
+const http = require("http"); // ✅ Add
+const { Server } = require("socket.io"); // ✅ Add
 const app = express();
+const server = http.createServer(app); // ✅ Add
+
+// ✅ Socket.io setup
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST"],
+  },
+});
 
 // ✅ Routes import
 const authRouter = require("./routes/auth_router");
@@ -16,7 +27,6 @@ const meetingRoutes = require('./routes/meeting-routes');
 const documentRoutes = require('./routes/document-routes');
 const dealRoutes = require('./routes/deal-routes');
 
-
 // ✅ CORS Options
 const corsOptions = {
   origin: "http://localhost:5173",
@@ -24,7 +34,6 @@ const corsOptions = {
   credentials: true,
 };
 
-// ✅ Middlewares
 app.use(cors(corsOptions));
 app.use(express.json());
 
@@ -39,24 +48,46 @@ app.use('/api/collaborations', collaborationRoutes);
 app.use('/api/meetings', meetingRoutes);
 app.use('/api/documents', documentRoutes);
 app.use('/api/deals', dealRoutes);
-
-
-// ✅ Uploads folder static serve karo
 app.use('/uploads', express.static('uploads'));
 
-// ✅ Test Route
 app.get("/", (req, res) => {
   res.send("Backend is running successfully");
 });
 
-// ✅ Error Middleware (hamesha last mein)
+// ✅ Socket.io Video Call Signaling
+io.on("connection", (socket) => {
+  console.log("User connected:", socket.id);
+
+  // ✅ Room join karo
+  socket.on("join-room", (roomId, userId) => {
+    socket.join(roomId);
+    socket.to(roomId).emit("user-connected", userId);
+    console.log(`User ${userId} joined room ${roomId}`);
+
+    socket.on("disconnect", () => {
+      socket.to(roomId).emit("user-disconnected", userId);
+    });
+  });
+
+  // ✅ WebRTC Signaling
+  socket.on("offer", (offer, roomId) => {
+    socket.to(roomId).emit("offer", offer);
+  });
+
+  socket.on("answer", (answer, roomId) => {
+    socket.to(roomId).emit("answer", answer);
+  });
+
+  socket.on("ice-candidate", (candidate, roomId) => {
+    socket.to(roomId).emit("ice-candidate", candidate);
+  });
+});
+
 app.use(errorMiddleware);
 
-// ✅ Server Start
 const PORT = 1000;
-
 connectDB().then(() => {
-  app.listen(PORT, () => {
+  server.listen(PORT, () => { // ✅ server.listen (app.listen nahi)
     console.log(`Server is running at port: ${PORT}`);
   });
 });

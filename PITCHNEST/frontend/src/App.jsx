@@ -20,6 +20,9 @@ import InvestorsPage from "./pages/dashboard/InvestorsPage";
 import EntrepreneurProfile from "./pages/dashboard/EntrepreneurProfile";
 import InvestorProfile from "./pages/dashboard/InvestorProfile";
 import MeetingsPage from "./pages/dashboard/MeetingsPage";
+import VideoCallPage from './pages/dashboard/VideoCallPage';
+
+
 
 
 
@@ -59,6 +62,7 @@ const App = () => {
           <Route path="/entrepreneur/:id" element={<EntrepreneurProfile />} />
           <Route path="/investor/:id" element={<InvestorProfile />} />
           <Route path="/meetings" element={<MeetingsPage />} />
+           <Route path="/video-call/:roomId" element={<VideoCallPage />} />
         </Route>
 
         {/* 🟡 Auth Layout Routes */}

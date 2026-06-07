@@ -267,6 +267,26 @@
   background: #1d4ed8;
 }
 
+/*video call button*/ 
+.video-call-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.video-call-btn:hover {
+  background: #1d4ed8;
+}
 /* Empty */
 .chat-empty {
   flex: 1;
