@@ -19,6 +19,7 @@ import FindStartupsPage from "./pages/dashboard/FindStartupsPage";
 import InvestorsPage from "./pages/dashboard/InvestorsPage";
 import EntrepreneurProfile from "./pages/dashboard/EntrepreneurProfile";
 import InvestorProfile from "./pages/dashboard/InvestorProfile";
+import MeetingsPage from "./pages/dashboard/MeetingsPage";
 
 
 
@@ -57,7 +58,7 @@ const App = () => {
           <Route path="/find-investors" element={<InvestorsPage />} />
           <Route path="/entrepreneur/:id" element={<EntrepreneurProfile />} />
           <Route path="/investor/:id" element={<InvestorProfile />} />
-
+          <Route path="/meetings" element={<MeetingsPage />} />
         </Route>
 
         {/* 🟡 Auth Layout Routes */}

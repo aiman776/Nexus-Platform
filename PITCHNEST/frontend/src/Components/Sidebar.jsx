@@ -1,8 +1,9 @@
 import { NavLink } from "react-router-dom";
+
 import {
   LayoutDashboard, Briefcase, Users, MessageCircle,
-  Bell, FileText, Settings, HelpCircle,
-  DollarSign, HandshakeIcon
+  Bell, FileText, Settings, HelpCircle, TrendingUp,
+  DollarSign, HandshakeIcon, Calendar // ✅ yeh add karo
 } from "lucide-react";
 import { useAuth } from "../store/auth";
 import "./Sidebar.css";
@@ -27,6 +28,8 @@ export const Sidebar = () => {
     { to: "/find-investors",          icon: <Users size={20} />,            label: "Find Investors" },
     { to: "/messages",                icon: <MessageCircle size={20} />,    label: "Messages" },
     { to: "/notifications",           icon: <Bell size={20} />,             label: "Notifications" },
+    // Entrepreneur links mein
+{ to: "/meetings", icon: <Calendar size={20} />, label: "Meetings" },
     { to: "/documents",               icon: <FileText size={20} />,         label: "Documents" },
   ];
 
@@ -37,6 +40,8 @@ export const Sidebar = () => {
     { to: "/find-startups",       icon: <Users size={20} />,           label: "Find Startups" },
     { to: "/messages",            icon: <MessageCircle size={20} />,   label: "Messages" },
     { to: "/notifications",       icon: <Bell size={20} />,            label: "Notifications" },
+    // Investor links mein
+{ to: "/meetings", icon: <Calendar size={20} />, label: "Meetings" },
     { to: "/deals",               icon: <HandshakeIcon size={20} />,   label: "Deals" },
   ];
 

@@ -12,6 +12,10 @@ const startupRoutes = require('./routes/startup-routes');
 const investorRoutes = require('./routes/investor-routes');
 const messageRoutes = require('./routes/message-routes');
 const collaborationRoutes = require('./routes/collaboration-routes');
+const meetingRoutes = require('./routes/meeting-routes');
+const documentRoutes = require('./routes/document-routes');
+const dealRoutes = require('./routes/deal-routes');
+
 
 // ✅ CORS Options
 const corsOptions = {
@@ -32,6 +36,14 @@ app.use('/api/startups', startupRoutes);
 app.use('/api/investors', investorRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/collaborations', collaborationRoutes);
+app.use('/api/meetings', meetingRoutes);
+app.use('/api/documents', documentRoutes);
+app.use('/api/deals', dealRoutes);
+
+
+// ✅ Uploads folder static serve karo
+app.use('/uploads', express.static('uploads'));
+
 // ✅ Test Route
 app.get("/", (req, res) => {
   res.send("Backend is running successfully");

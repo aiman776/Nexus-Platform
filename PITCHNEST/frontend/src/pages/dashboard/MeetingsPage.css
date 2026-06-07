@@ -1,0 +1,183 @@
+/* Form Card */
+.meet-form-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+
+.meet-form-card h2 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 20px;
+}
+
+.meet-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.meet-form-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.meet-cancel-btn {
+  padding: 10px 20px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #64748b;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: 0.2s ease;
+}
+
+.meet-cancel-btn:hover {
+  border-color: #dc2626;
+  color: #dc2626;
+}
+
+/* Meetings List */
+.meet-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.meet-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #ffffff;
+  transition: all 0.2s ease;
+}
+
+.meet-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+.meet-card-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Date Box */
+.meet-date-box {
+  width: 52px;
+  height: 52px;
+  background: #eff6ff;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.meet-day {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #2563eb;
+  line-height: 1;
+}
+
+.meet-month {
+  font-size: 0.7rem;
+  color: #2563eb;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.meet-info h3 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 4px;
+}
+
+.meet-info p {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin-bottom: 6px;
+}
+
+.meet-meta {
+  display: flex;
+  gap: 12px;
+  font-size: 0.78rem;
+  color: #94a3b8;
+}
+
+.meet-meta span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Right Side */
+.meet-card-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Status */
+.meet-status {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.meet-status-yellow { background: #fef3c7; color: #d97706; }
+.meet-status-green  { background: #dcfce7; color: #16a34a; }
+.meet-status-red    { background: #fee2e2; color: #dc2626; }
+.meet-status-gray   { background: #f1f5f9; color: #64748b; }
+
+/* Action Buttons */
+.meet-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.meet-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: none;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.2s ease;
+}
+
+.meet-btn.accept { background: #dcfce7; color: #16a34a; }
+.meet-btn.accept:hover { background: #16a34a; color: #ffffff; }
+
+.meet-btn.reject { background: #fee2e2; color: #dc2626; }
+.meet-btn.reject:hover { background: #dc2626; color: #ffffff; }
+
+.meet-btn.cancel { background: #f1f5f9; color: #64748b; }
+.meet-btn.cancel:hover { background: #fee2e2; color: #dc2626; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .meet-form-grid { grid-template-columns: 1fr; }
+  .meet-card { flex-direction: column; align-items: flex-start; gap: 12px; }
+}
