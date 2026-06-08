@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { MessageCircle, Building2, MapPin, UserCircle, BarChart3, Briefcase } from 'lucide-react';
 import { useAuth } from '../../store/auth';
 import { Sidebar } from '../../Components/Sidebar';
@@ -17,7 +17,6 @@ const InvestorProfile = () => {
   useEffect(() => {
     const fetchInvestor = async () => {
       try {
-        // ✅ mine, no id, ya apna id ho toh mine fetch karo
         const isMine = !id || id === 'mine' || id === currentUser?._id;
         const url = isMine
           ? `http://localhost:1000/api/investors/mine`
@@ -36,6 +35,29 @@ const InvestorProfile = () => {
     };
     if (token) fetchInvestor();
   }, [id, token, currentUser?._id]);
+
+  // ✅ Message button handler - conversation create karo
+  const handleMessage = async () => {
+    try {
+      const receiverId = investor.user?._id || investor.user;
+      const res = await fetch('http://localhost:1000/api/messages/conversations', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ receiverId }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        navigate('/messages');
+      } else {
+        console.error(data.message);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   if (loading) return (
     <div className="dashboard-layout">
@@ -85,11 +107,13 @@ const InvestorProfile = () => {
               </div>
             </div>
           </div>
+
           <div className="ip-header-actions">
+            {/* ✅ Message button - conversation create karo */}
             {!isCurrentUser && (
-              <Link to={`/messages`}>
-                <button className="btn-blue"><MessageCircle size={16} /> Message</button>
-              </Link>
+              <button className="btn-blue" onClick={handleMessage}>
+                <MessageCircle size={16} /> Message
+              </button>
             )}
             {isCurrentUser && (
               <button className="btn-outline"><UserCircle size={16} /> Edit Profile</button>

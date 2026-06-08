@@ -9,7 +9,6 @@ const EntrepreneurProfile = () => {
   const { id } = useParams();
   const { user: currentUser, token } = useAuth();
   const navigate = useNavigate();
-  const role = currentUser?.role || 'entrepreneur';
 
   const [entrepreneur, setEntrepreneur] = useState(null);
   const [startup, setStartup] = useState(null);
@@ -19,7 +18,6 @@ const EntrepreneurProfile = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        // ✅ Agar id hai toh us user ka profile, warna apna
         const url = id && id !== currentUser?._id
           ? `http://localhost:1000/api/auth/user/${id}`
           : `http://localhost:1000/api/profile`;
@@ -30,7 +28,6 @@ const EntrepreneurProfile = () => {
         const data = await res.json();
         if (res.ok) setEntrepreneur(data.user || data);
 
-        // ✅ Startup bhi fetch karo
         const startupRes = await fetch(`http://localhost:1000/api/startups`, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -39,7 +36,6 @@ const EntrepreneurProfile = () => {
           const found = startupData.startups?.find(s => s.user?._id === id || s.user === id);
           setStartup(found || null);
         }
-
       } catch (err) {
         console.error(err);
       } finally {
@@ -49,7 +45,24 @@ const EntrepreneurProfile = () => {
     if (token) fetchProfile();
   }, [id, token]);
 
-  // ✅ Collaboration request bhejo
+  // ✅ Message button handler
+  const handleMessage = async () => {
+    try {
+      const res = await fetch('http://localhost:1000/api/messages/conversations', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ receiverId: entrepreneur._id || id }),
+      });
+      if (res.ok) navigate('/messages');
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // ✅ Collaboration request
   const handleSendRequest = async () => {
     try {
       const res = await fetch('http://localhost:1000/api/collaborations', {
@@ -71,14 +84,14 @@ const EntrepreneurProfile = () => {
 
   if (loading) return (
     <div className="dashboard-layout">
-      <Sidebar role={role} />
+      <Sidebar />
       <main className="dashboard-main"><p>Loading...</p></main>
     </div>
   );
 
   if (!entrepreneur) return (
     <div className="dashboard-layout">
-      <Sidebar role={role} />
+      <Sidebar />
       <main className="dashboard-main">
         <div className="not-found">
           <h2>Entrepreneur not found</h2>
@@ -93,7 +106,7 @@ const EntrepreneurProfile = () => {
 
   return (
     <div className="dashboard-layout">
-      <Sidebar role={role} />
+      <Sidebar />
       <main className="dashboard-main">
 
         {/* PROFILE HEADER */}
@@ -121,6 +134,12 @@ const EntrepreneurProfile = () => {
             {isCurrentUser && (
               <button className="btn-outline"><UserCircle size={16} /> Edit Profile</button>
             )}
+            {/* ✅ Message button */}
+            {!isCurrentUser && (
+              <button className="btn-outline" onClick={handleMessage}>
+                <MessageCircle size={16} /> Message
+              </button>
+            )}
             {!isCurrentUser && isInvestor && (
               <button className="btn-blue" disabled={requestSent} onClick={handleSendRequest}>
                 <Send size={16} />
@@ -147,7 +166,6 @@ const EntrepreneurProfile = () => {
               </div>
             </div>
 
-            {/* ✅ Startup info */}
             {startup && (
               <div className="ep-card">
                 <div className="ep-card-header"><h2>Startup</h2></div>
