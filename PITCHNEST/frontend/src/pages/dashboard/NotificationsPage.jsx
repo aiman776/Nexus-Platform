@@ -6,10 +6,10 @@ import './NotificationsPage.css';
 
 const getNotificationIcon = (type) => {
   switch (type) {
-    case 'message': return <MessageCircle size={16} className="icon-blue" />;
+    case 'message':    return <MessageCircle size={16} className="icon-blue" />;
     case 'connection': return <UserPlus size={16} className="icon-purple" />;
     case 'investment': return <DollarSign size={16} className="icon-orange" />;
-    default: return <Bell size={16} className="icon-gray" />;
+    default:           return <Bell size={16} className="icon-gray" />;
   }
 };
 
@@ -20,12 +20,9 @@ const NotificationsPage = () => {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // ✅ Backend se collaboration requests ko notifications ki tarah show karo
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        // Entrepreneur ke liye received requests
-        // Investor ke liye sent requests
         const url = role === 'investor'
           ? 'http://localhost:1000/api/collaborations/sent'
           : 'http://localhost:1000/api/collaborations/received';
@@ -36,7 +33,6 @@ const NotificationsPage = () => {
         const data = await res.json();
 
         if (res.ok) {
-          // ✅ Requests ko notification format mein convert karo
           const notifs = (data.requests || []).map(req => ({
             id: req._id,
             type: 'investment',
@@ -52,7 +48,8 @@ const NotificationsPage = () => {
               ? `You sent a collaboration request — Status: ${req.status}`
               : `sent you a collaboration request`,
             time: new Date(req.createdAt).toLocaleDateString(),
-            unread: req.status === 'pending',
+            // ✅ isRead backend se aata hai
+            unread: req.isRead === false || req.status === 'pending',
             status: req.status,
           }));
           setNotifications(notifs);
@@ -66,26 +63,56 @@ const NotificationsPage = () => {
     if (token) fetchNotifications();
   }, [token, role]);
 
-  const markAllRead = () => {
-    setNotifications(notifications.map(n => ({ ...n, unread: false })));
+  // ✅ Single notification mark as read
+  const markRead = async (id) => {
+    try {
+      // ✅ Frontend mein update karo
+      setNotifications(prev =>
+        prev.map(n => n.id === id ? { ...n, unread: false } : n)
+      );
+
+      // ✅ Backend ko bhi update karo
+      await fetch(`http://localhost:1000/api/collaborations/${id}/read`, {
+        method: 'PUT',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  const markRead = (id) => {
-    setNotifications(notifications.map(n =>
-      n.id === id ? { ...n, unread: false } : n
-    ));
+  // ✅ All mark as read
+  const markAllRead = async () => {
+    try {
+      // ✅ Frontend update
+      setNotifications(prev => prev.map(n => ({ ...n, unread: false })));
+
+      // ✅ Backend update
+      await fetch('http://localhost:1000/api/collaborations/read-all', {
+        method: 'PUT',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const unreadCount = notifications.filter(n => n.unread).length;
 
   return (
     <div className="dashboard-layout">
-      <Sidebar role={role} />
+      <Sidebar />
       <main className="dashboard-main">
 
         <div className="dashboard-header">
           <div>
-            <h1>Notifications</h1>
+            <h1>
+              Notifications
+              {/* ✅ Header badge */}
+              {unreadCount > 0 && (
+                <span className="notif-header-badge">{unreadCount}</span>
+              )}
+            </h1>
             <p>Stay updated with your network activity</p>
           </div>
           {unreadCount > 0 && (
@@ -116,6 +143,7 @@ const NotificationsPage = () => {
                 <div className="notif-content">
                   <div className="notif-top">
                     <span className="notif-name">{notification.user?.name}</span>
+                    {/* ✅ Seen hone pe badge gayab */}
                     {notification.unread && (
                       <span className="notif-badge">New</span>
                     )}
@@ -126,6 +154,7 @@ const NotificationsPage = () => {
                     <span>{notification.time}</span>
                   </div>
                 </div>
+                {/* ✅ Blue dot - seen hone pe gayab */}
                 {notification.unread && <div className="notif-dot" />}
               </div>
             ))

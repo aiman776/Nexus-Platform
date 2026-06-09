@@ -1,14 +1,16 @@
 import { useState, useEffect, useRef } from 'react';
-import { Video } from 'lucide-react'; // ✅ Import add karo
-
-import { Search, Send, MessageCircle } from 'lucide-react';
+import { Search, Send, MessageCircle, Video } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { io } from 'socket.io-client';
 import { Sidebar } from '../../Components/Sidebar';
 import { useAuth } from '../../store/auth';
 import './MessagesPage.css';
 
+const socket = io('http://localhost:1000');
+
 const MessagesPage = () => {
   const { user, token } = useAuth();
-  const role = user?.role || 'entrepreneur';
+  const navigate = useNavigate();
 
   const [conversations, setConversations] = useState([]);
   const [selectedChat, setSelectedChat] = useState(null);
@@ -16,9 +18,39 @@ const MessagesPage = () => {
   const [newMessage, setNewMessage] = useState('');
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
+  const [incomingCall, setIncomingCall] = useState(null); // ✅ Incoming call state
   const messagesEndRef = useRef(null);
 
-  // ✅ Conversations fetch karo
+  // ✅ Socket register + incoming call listen
+  useEffect(() => {
+    if (!user?._id) return;
+
+    // ✅ Apna userId register karo
+    socket.emit('register-user', user._id);
+
+    // ✅ Incoming call aaye to popup dikhao
+    socket.on('incoming-call', ({ callerId, callerName, roomId }) => {
+      setIncomingCall({ callerId, callerName, roomId });
+    });
+
+    // ✅ Call decline hua
+    socket.on('call-declined', () => {
+      alert('Call declined by the other person.');
+    });
+
+    // ✅ User offline hai
+    socket.on('user-offline', () => {
+      alert('User is currently offline. They cannot receive calls.');
+    });
+
+    return () => {
+      socket.off('incoming-call');
+      socket.off('call-declined');
+      socket.off('user-offline');
+    };
+  }, [user]);
+
+  // ✅ Conversations fetch
   useEffect(() => {
     const fetchConversations = async () => {
       try {
@@ -28,7 +60,7 @@ const MessagesPage = () => {
         const data = await res.json();
         if (res.ok) {
           setConversations(data.conversations || []);
-          if (data.conversations?.length > 0) {
+          if (data.conversations?.length > 0 && !selectedChat) {
             setSelectedChat(data.conversations[0]);
           }
         }
@@ -41,7 +73,7 @@ const MessagesPage = () => {
     if (token) fetchConversations();
   }, [token]);
 
-  // ✅ Messages fetch karo jab conversation select ho
+  // ✅ Messages fetch + mark as read
   useEffect(() => {
     const fetchMessages = async () => {
       if (!selectedChat) return;
@@ -51,7 +83,19 @@ const MessagesPage = () => {
           { headers: { Authorization: `Bearer ${token}` } }
         );
         const data = await res.json();
-        if (res.ok) setMessages(data.messages || []);
+        if (res.ok) {
+          setMessages(data.messages || []);
+          setConversations(prev =>
+            prev.map(c => c._id === selectedChat._id
+              ? { ...c, unreadCount: 0 }
+              : c
+            )
+          );
+          await fetch(
+            `http://localhost:1000/api/messages/conversations/${selectedChat._id}/read`,
+            { method: 'PUT', headers: { Authorization: `Bearer ${token}` } }
+          );
+        }
       } catch (err) {
         console.error(err);
       }
@@ -84,7 +128,6 @@ const MessagesPage = () => {
       if (res.ok) {
         setMessages(prev => [...prev, data.message]);
         setNewMessage('');
-        // ✅ Last message update karo
         setConversations(prev =>
           prev.map(c => c._id === selectedChat._id
             ? { ...c, lastMessage: newMessage }
@@ -97,10 +140,47 @@ const MessagesPage = () => {
     }
   };
 
-  // ✅ Doosre member ka naam nikalo
+  // ✅ Video Call shuru karo - dusre ko notification bhejo
+  const handleVideoCall = () => {
+    if (!selectedChat) return;
+    const receiver = getOtherMember(selectedChat);
+    if (!receiver) return;
+
+    // ✅ Dusre ko socket notification bhejo
+    socket.emit('call-user', {
+      receiverId: receiver._id,
+      callerId: user._id,
+      callerName: user.username,
+      roomId: selectedChat._id,
+    });
+
+    // ✅ Khud video call page pe jao
+    navigate(`/video-call/${selectedChat._id}`);
+  };
+
+  // ✅ Incoming call Accept
+  const handleAcceptCall = () => {
+    if (!incomingCall) return;
+    socket.emit('accept-call', {
+      callerId: incomingCall.callerId,
+      roomId: incomingCall.roomId,
+    });
+    setIncomingCall(null);
+    navigate(`/video-call/${incomingCall.roomId}`);
+  };
+
+  // ✅ Incoming call Decline
+  const handleDeclineCall = () => {
+    if (!incomingCall) return;
+    socket.emit('decline-call', { callerId: incomingCall.callerId });
+    setIncomingCall(null);
+  };
+
   const getOtherMember = (conversation) => {
     return conversation.members?.find(m => m._id !== user?._id);
   };
+
+  const totalUnread = conversations.reduce((sum, c) => sum + (c.unreadCount || 0), 0);
 
   const filteredConversations = conversations.filter(c => {
     const other = getOtherMember(c);
@@ -109,14 +189,42 @@ const MessagesPage = () => {
 
   return (
     <div className="messages-wrapper">
-      <Sidebar role={role} />
+      <Sidebar />
+
+      {/* ✅ Incoming Call Popup */}
+      {incomingCall && (
+        <div className="incoming-call-popup">
+          <div className="incoming-call-card">
+            <div className="incoming-call-avatar">
+              {incomingCall.callerName?.charAt(0).toUpperCase()}
+            </div>
+            <div className="incoming-call-info">
+              <h3>{incomingCall.callerName}</h3>
+              <p>Incoming Video Call...</p>
+            </div>
+            <div className="incoming-call-actions">
+              <button className="accept-btn" onClick={handleAcceptCall}>
+                Accept
+              </button>
+              <button className="decline-btn" onClick={handleDeclineCall}>
+                Decline
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="messages-container">
 
         {/* Left - Conversation List */}
         <div className="conv-list">
           <div className="conv-header">
-            <h2>Messages</h2>
+            <h2>
+              Messages
+              {totalUnread > 0 && (
+                <span className="conv-header-badge">{totalUnread}</span>
+              )}
+            </h2>
           </div>
 
           <div className="conv-search">
@@ -182,27 +290,32 @@ const MessagesPage = () => {
                 <p className="chat-name">{getOtherMember(selectedChat)?.username}</p>
                 <p className="chat-role">{getOtherMember(selectedChat)?.role}</p>
               </div>
-               {/* ✅ Video call button */}
- {/* ✅ selectedChat ki ID room ID banega */}
-<button
-  className="video-call-btn"
-  onClick={() => navigate(`/video-call/${selectedChat.id}`)}
->
-  <Video size={20} /> Video Call
-</button>
+
+              {/* ✅ Video call button */}
+              <button className="video-call-btn" onClick={handleVideoCall}>
+                <Video size={18} /> Video Call
+              </button>
             </div>
 
             <div className="chat-messages">
               {messages.map(msg => (
                 <div
                   key={msg._id}
-                  className={`msg-bubble-wrap ${msg.sender?._id === user?._id || msg.sender === user?._id ? 'me' : 'them'}`}
+                  className={`msg-bubble-wrap ${
+                    msg.sender?._id === user?._id || msg.sender === user?._id
+                      ? 'me' : 'them'
+                  }`}
                 >
-                  <div className={`msg-bubble ${msg.sender?._id === user?._id || msg.sender === user?._id ? 'bubble-me' : 'bubble-them'}`}>
+                  <div className={`msg-bubble ${
+                    msg.sender?._id === user?._id || msg.sender === user?._id
+                      ? 'bubble-me' : 'bubble-them'
+                  }`}>
                     <p>{msg.text}</p>
                     <span className="msg-time">
                       {msg.createdAt
-                        ? new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                        ? new Date(msg.createdAt).toLocaleTimeString([], {
+                            hour: '2-digit', minute: '2-digit'
+                          })
                         : 'Just now'}
                     </span>
                   </div>

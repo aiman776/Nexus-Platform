@@ -1,9 +1,9 @@
 const express = require("express");
 const cors = require("cors");
-const http = require("http"); // ✅ Add
-const { Server } = require("socket.io"); // ✅ Add
+const http = require("http");
+const { Server } = require("socket.io");
 const app = express();
-const server = http.createServer(app); // ✅ Add
+const server = http.createServer(app);
 
 // ✅ Socket.io setup
 const io = new Server(server, {
@@ -54,11 +54,53 @@ app.get("/", (req, res) => {
   res.send("Backend is running successfully");
 });
 
-// ✅ Socket.io Video Call Signaling
+// ✅ Online users track karo - userId => socketId
+const onlineUsers = new Map();
+
+// ✅ Socket.io
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
 
-  // ✅ Room join karo
+  // ✅ User apna ID register kare
+  socket.on("register-user", (userId) => {
+    onlineUsers.set(userId, socket.id);
+    console.log(`User ${userId} registered with socket ${socket.id}`);
+  });
+
+  // ✅ Video call notification bhejo
+  socket.on("call-user", ({ receiverId, callerId, callerName, roomId }) => {
+    const receiverSocketId = onlineUsers.get(receiverId);
+    console.log(`Call from ${callerId} to ${receiverId}, room: ${roomId}`);
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("incoming-call", {
+        callerId,
+        callerName,
+        roomId,
+      });
+      console.log(`Incoming call sent to socket ${receiverSocketId}`);
+    } else {
+      socket.emit("user-offline", { receiverId });
+      console.log(`User ${receiverId} is offline`);
+    }
+  });
+
+  // ✅ Call accept
+  socket.on("accept-call", ({ callerId, roomId }) => {
+    const callerSocketId = onlineUsers.get(callerId);
+    if (callerSocketId) {
+      io.to(callerSocketId).emit("call-accepted", { roomId });
+    }
+  });
+
+  // ✅ Call decline
+  socket.on("decline-call", ({ callerId }) => {
+    const callerSocketId = onlineUsers.get(callerId);
+    if (callerSocketId) {
+      io.to(callerSocketId).emit("call-declined");
+    }
+  });
+
+  // ✅ Room join karo - WebRTC
   socket.on("join-room", (roomId, userId) => {
     socket.join(roomId);
     socket.to(roomId).emit("user-connected", userId);
@@ -81,13 +123,28 @@ io.on("connection", (socket) => {
   socket.on("ice-candidate", (candidate, roomId) => {
     socket.to(roomId).emit("ice-candidate", candidate);
   });
+
+  socket.on("leave-room", (roomId, userId) => {
+    socket.to(roomId).emit("user-disconnected", userId);
+    socket.leave(roomId);
+  });
+
+  // ✅ Disconnect pe online users se hata do
+  socket.on("disconnect", () => {
+    onlineUsers.forEach((socketId, userId) => {
+      if (socketId === socket.id) {
+        onlineUsers.delete(userId);
+        console.log(`User ${userId} disconnected`);
+      }
+    });
+  });
 });
 
 app.use(errorMiddleware);
 
 const PORT = 1000;
 connectDB().then(() => {
-  server.listen(PORT, () => { // ✅ server.listen (app.listen nahi)
+  server.listen(PORT, () => {
     console.log(`Server is running at port: ${PORT}`);
   });
 });

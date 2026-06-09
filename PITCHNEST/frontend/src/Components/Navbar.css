@@ -160,3 +160,32 @@ header {
     margin-bottom: 12px;
   }
 }
+/* =============================================
+   Navbar.css mein add karo - Avatar + Green dot
+============================================= */
+
+/* Avatar wrapper - position relative for dot */
+.avatar-circle-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+/* ✅ Green online dot */
+.avatar-online-dot {
+  position: absolute;
+  bottom: 1px;
+  right: 1px;
+  width: 10px;
+  height: 10px;
+  background: #22c55e;
+  border-radius: 50%;
+  border: 2px solid white;
+  display: block;
+}
+
+/* Avatar hover effect */
+.avatar-wrapper:hover .avatar-circle {
+  opacity: 0.85;
+  transform: scale(1.05);
+  transition: all 0.2s ease;
+}

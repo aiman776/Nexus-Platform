@@ -18,9 +18,13 @@ const EntrepreneurProfile = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const url = id && id !== currentUser?._id
-          ? `http://localhost:1000/api/auth/user/${id}`
-          : `http://localhost:1000/api/profile`;
+        const myId = currentUser?._id || currentUser?.id;
+        const isMine = !id || id === myId;
+
+        // ✅ Apna profile ya dusre ka
+        const url = isMine
+          ? `http://localhost:1000/api/profile`
+          : `http://localhost:1000/api/auth/user/${id}`;
 
         const res = await fetch(url, {
           headers: { Authorization: `Bearer ${token}` },
@@ -28,12 +32,16 @@ const EntrepreneurProfile = () => {
         const data = await res.json();
         if (res.ok) setEntrepreneur(data.user || data);
 
+        // ✅ Startup fetch karo
         const startupRes = await fetch(`http://localhost:1000/api/startups`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const startupData = await startupRes.json();
         if (startupRes.ok) {
-          const found = startupData.startups?.find(s => s.user?._id === id || s.user === id);
+          const found = startupData.startups?.find(
+            s => s.user?._id === id || s.user === id ||
+                 s.user?._id === myId || s.user === myId
+          );
           setStartup(found || null);
         }
       } catch (err) {
@@ -43,9 +51,9 @@ const EntrepreneurProfile = () => {
       }
     };
     if (token) fetchProfile();
-  }, [id, token]);
+  }, [id, token, currentUser]);
 
-  // ✅ Message button handler
+  // ✅ Message handler
   const handleMessage = async () => {
     try {
       const res = await fetch('http://localhost:1000/api/messages/conversations', {
@@ -101,7 +109,8 @@ const EntrepreneurProfile = () => {
     </div>
   );
 
-  const isCurrentUser = currentUser?._id === id || !id;
+  const myId = currentUser?._id || currentUser?.id;
+  const isCurrentUser = entrepreneur._id === myId || !id || id === myId;
   const isInvestor = currentUser?.role === 'investor';
 
   return (
@@ -132,9 +141,10 @@ const EntrepreneurProfile = () => {
 
           <div className="ep-header-actions">
             {isCurrentUser && (
-              <button className="btn-outline"><UserCircle size={16} /> Edit Profile</button>
+              <button className="btn-outline" onClick={() => navigate('/settings')}>
+                <UserCircle size={16} /> Edit Profile
+              </button>
             )}
-            {/* ✅ Message button */}
             {!isCurrentUser && (
               <button className="btn-outline" onClick={handleMessage}>
                 <MessageCircle size={16} /> Message
@@ -152,6 +162,7 @@ const EntrepreneurProfile = () => {
         {/* MAIN GRID */}
         <div className="ep-grid">
           <div className="ep-left">
+
             <div className="ep-card">
               <div className="ep-card-header"><h2>About</h2></div>
               <div className="ep-card-body">
@@ -179,6 +190,7 @@ const EntrepreneurProfile = () => {
                 </div>
               </div>
             )}
+
           </div>
 
           <div className="ep-right">

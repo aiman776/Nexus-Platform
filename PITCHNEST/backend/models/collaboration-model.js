@@ -1,22 +1,27 @@
 const mongoose = require('mongoose');
 
 const CollaborationSchema = new mongoose.Schema({
-    sender: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true,
-    },
-    receiver: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true,
-    },
-    message: { type: String, default: '' },
-    status: {
-        type: String,
-        enum: ['pending', 'accepted', 'rejected'],
-        default: 'pending',
-    },
+  sender: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
+  receiver: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
+  message: { type: String, default: '' },
+  status: {
+    type: String,
+    enum: ['pending', 'accepted', 'rejected'],
+    default: 'pending',
+  },
+  // ✅ isRead add kiya - notification seen tracking
+  isRead: {
+    type: Boolean,
+    default: false,
+  },
 }, { timestamps: true });
 
 const Collaboration = mongoose.model('Collaboration', CollaborationSchema);

@@ -1,4 +1,7 @@
-import { BrowserRouter as Router, Routes, Route, Outlet } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Outlet, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { io } from 'socket.io-client';
+import { useAuth } from "./store/auth";
 
 import { Home } from "./pages/Home";
 import { Register } from "./pages/Register";
@@ -20,13 +23,13 @@ import InvestorsPage from "./pages/dashboard/InvestorsPage";
 import EntrepreneurProfile from "./pages/dashboard/EntrepreneurProfile";
 import InvestorProfile from "./pages/dashboard/InvestorProfile";
 import MeetingsPage from "./pages/dashboard/MeetingsPage";
-import VideoCallPage from './pages/dashboard/VideoCallPage';
+import VideoCallPage from "./pages/dashboard/VideoCallPage";
 
+import "./App.css";
 
+const socket = io('http://localhost:1000');
 
-
-
-
+// ✅ Layouts
 const MainLayout = () => (
   <>
     <Navbar />
@@ -40,12 +43,58 @@ const AuthLayout = () => (
   </>
 );
 
-const App = () => {
-  return (
-    <Router>
-      <Routes>
+const AppContent = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [incomingCall, setIncomingCall] = useState(null);
 
-        {/* 🔵 Main Layout Routes */}
+  useEffect(() => {
+    if (user?._id) {
+      socket.emit('register-user', user._id);
+      socket.on('incoming-call', ({ callerId, callerName, roomId }) => {
+        setIncomingCall({ callerId, callerName, roomId });
+      });
+      socket.on('call-declined', () => {
+        alert('Call declined!');
+      });
+    }
+    return () => {
+      socket.off('incoming-call');
+      socket.off('call-declined');
+    };
+  }, [user]);
+
+  const handleAccept = () => {
+    socket.emit('accept-call', { callerId: incomingCall.callerId, roomId: incomingCall.roomId });
+    setIncomingCall(null);
+    navigate(`/video-call/${incomingCall.roomId}`);
+  };
+
+  const handleDecline = () => {
+    socket.emit('decline-call', { callerId: incomingCall.callerId });
+    setIncomingCall(null);
+  };
+
+  return (
+    <>
+      {/* ✅ Incoming Call Popup */}
+      {incomingCall && (
+        <div className="incoming-call-popup">
+          <div className="incoming-call-box">
+            <div className="call-avatar">
+              {incomingCall.callerName?.charAt(0).toUpperCase()}
+            </div>
+            <h3>{incomingCall.callerName}</h3>
+            <p>Incoming Video Call...</p>
+            <div className="call-btns">
+              <button className="call-accept-btn" onClick={handleAccept}>Accept</button>
+              <button className="call-decline-btn" onClick={handleDecline}>Decline</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <Routes>
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/logout" element={<Logout />} />
@@ -62,20 +111,25 @@ const App = () => {
           <Route path="/entrepreneur/:id" element={<EntrepreneurProfile />} />
           <Route path="/investor/:id" element={<InvestorProfile />} />
           <Route path="/meetings" element={<MeetingsPage />} />
-           <Route path="/video-call/:roomId" element={<VideoCallPage />} />
+          <Route path="/video-call/:roomId" element={<VideoCallPage />} />
         </Route>
 
-        {/* 🟡 Auth Layout Routes */}
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/profile" element={<Profile />} />
         </Route>
 
-        {/* 🔴 Error Page */}
         <Route path="/*" element={<Error />} />
-
       </Routes>
+    </>
+  );
+};
+
+const App = () => {
+  return (
+    <Router>
+      <AppContent />
     </Router>
   );
 };

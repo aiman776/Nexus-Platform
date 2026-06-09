@@ -9,7 +9,6 @@ const InvestorProfile = () => {
   const { id } = useParams();
   const { user: currentUser, token } = useAuth();
   const navigate = useNavigate();
-  const role = currentUser?.role || 'entrepreneur';
 
   const [investor, setInvestor] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -17,10 +16,14 @@ const InvestorProfile = () => {
   useEffect(() => {
     const fetchInvestor = async () => {
       try {
-        const isMine = !id || id === 'mine' || id === currentUser?._id;
+        // ✅ Agar id 'mine' hai, ya current user ka id hai, ya koi id nahi
+        // to apna profile fetch karo
+        const myId = currentUser?._id || currentUser?.id;
+        const isMine = !id || id === 'mine' || id === myId;
+
         const url = isMine
           ? `http://localhost:1000/api/investors/mine`
-          : `http://localhost:1000/api/investors/${id}`;
+          : `http://localhost:1000/api/investors/user/${id}`;  // ✅ user id se fetch
 
         const res = await fetch(url, {
           headers: { Authorization: `Bearer ${token}` },
@@ -34,9 +37,9 @@ const InvestorProfile = () => {
       }
     };
     if (token) fetchInvestor();
-  }, [id, token, currentUser?._id]);
+  }, [id, token, currentUser]);
 
-  // ✅ Message button handler - conversation create karo
+  // ✅ Message handler
   const handleMessage = async () => {
     try {
       const receiverId = investor.user?._id || investor.user;
@@ -48,12 +51,7 @@ const InvestorProfile = () => {
         },
         body: JSON.stringify({ receiverId }),
       });
-      const data = await res.json();
-      if (res.ok) {
-        navigate('/messages');
-      } else {
-        console.error(data.message);
-      }
+      if (res.ok) navigate('/messages');
     } catch (err) {
       console.error(err);
     }
@@ -61,14 +59,14 @@ const InvestorProfile = () => {
 
   if (loading) return (
     <div className="dashboard-layout">
-      <Sidebar role={role} />
+      <Sidebar />
       <main className="dashboard-main"><p>Loading...</p></main>
     </div>
   );
 
   if (!investor) return (
     <div className="dashboard-layout">
-      <Sidebar role={role} />
+      <Sidebar />
       <main className="dashboard-main">
         <div className="not-found">
           <h2>Investor profile nahi mili</h2>
@@ -79,11 +77,12 @@ const InvestorProfile = () => {
     </div>
   );
 
-  const isCurrentUser = currentUser?._id === investor.user?._id || currentUser?._id === investor.user;
+  const myId = currentUser?._id || currentUser?.id;
+  const isCurrentUser = investor.user?._id === myId || investor.user === myId;
 
   return (
     <div className="dashboard-layout">
-      <Sidebar role={role} />
+      <Sidebar />
       <main className="dashboard-main">
 
         <div className="ip-header-card">
@@ -109,20 +108,22 @@ const InvestorProfile = () => {
           </div>
 
           <div className="ip-header-actions">
-            {/* ✅ Message button - conversation create karo */}
             {!isCurrentUser && (
               <button className="btn-blue" onClick={handleMessage}>
                 <MessageCircle size={16} /> Message
               </button>
             )}
             {isCurrentUser && (
-              <button className="btn-outline"><UserCircle size={16} /> Edit Profile</button>
+              <button className="btn-outline" onClick={() => navigate('/settings')}>
+                <UserCircle size={16} /> Edit Profile
+              </button>
             )}
           </div>
         </div>
 
         <div className="ip-grid">
           <div className="ip-left">
+
             <div className="ip-card">
               <div className="ip-card-header"><h2>About</h2></div>
               <div className="ip-card-body"><p>{investor.bio || 'N/A'}</p></div>
@@ -182,19 +183,21 @@ const InvestorProfile = () => {
                 </div>
               </div>
             </div>
+
           </div>
 
           <div className="ip-right">
+
             <div className="ip-card">
               <div className="ip-card-header"><h2>Investment Details</h2></div>
               <div className="ip-card-body">
                 <div className="ip-detail-item">
                   <span>Investment Range</span>
-                  <strong>{investor.minimumInvestment} - {investor.maximumInvestment}</strong>
+                  <strong>{investor.minimumInvestment || 'N/A'} - {investor.maximumInvestment || 'N/A'}</strong>
                 </div>
                 <div className="ip-detail-item">
                   <span>Total Investments</span>
-                  <strong>{investor.totalInvestments} companies</strong>
+                  <strong>{investor.totalInvestments || 0} companies</strong>
                 </div>
                 <div className="ip-detail-item">
                   <span>Company</span>
@@ -207,9 +210,9 @@ const InvestorProfile = () => {
               <div className="ip-card-header"><h2>Investment Stats</h2></div>
               <div className="ip-card-body">
                 {[
-                  { label: 'Total Investments', value: investor.totalInvestments },
+                  { label: 'Total Investments',   value: investor.totalInvestments || 0 },
                   { label: 'Portfolio Companies', value: investor.portfolioCompanies?.length || 0 },
-                  { label: 'Investment Range', value: `${investor.minimumInvestment} - ${investor.maximumInvestment}` },
+                  { label: 'Investment Range',    value: `${investor.minimumInvestment || 'N/A'} - ${investor.maximumInvestment || 'N/A'}` },
                 ].map((stat, i) => (
                   <div key={i} className="ip-stat-item">
                     <div>
@@ -221,6 +224,7 @@ const InvestorProfile = () => {
                 ))}
               </div>
             </div>
+
           </div>
         </div>
       </main>

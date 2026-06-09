@@ -18,22 +18,49 @@ const FindStartupsPage = () => {
   const [selectedLocation, setSelectedLocation] = useState('');
 
   // ✅ Backend se startups fetch karo
-  useEffect(() => {
-    const fetchStartups = async () => {
-      try {
-        const res = await fetch('http://localhost:1000/api/startups', {
+useEffect(() => {
+  const fetchStartups = async () => {
+    try {
+      // ✅ Pehle startups fetch karo
+      const res = await fetch('http://localhost:1000/api/startups', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+
+      if (res.ok && data.startups?.length > 0) {
+        setStartups(data.startups);
+      } else {
+        // ✅ Agar startups nahi hain toh entrepreneur users fetch karo
+        const userRes = await fetch('http://localhost:1000/api/startups/all-users', {
           headers: { Authorization: `Bearer ${token}` },
         });
-        const data = await res.json();
-        if (res.ok) setStartups(data.startups || []);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
+        const userData = await userRes.json();
+        if (userRes.ok) {
+          // ✅ User data ko startup format mein convert karo
+          const converted = userData.entrepreneurs.map(u => ({
+            _id: u._id,
+            name: u.username,
+            startupName: u.username + "'s Startup",
+            industry: 'N/A',
+            location: u.location || 'N/A',
+            fundingNeeded: 'N/A',
+            fundingAmount: 0,
+            stage: 'N/A',
+            pitchSummary: u.bio || 'Entrepreneur looking for investors',
+            tags: [],
+            user: u._id,
+          }));
+          setStartups(converted);
+        }
       }
-    };
-    if (token) fetchStartups();
-  }, [token]);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+  if (token) fetchStartups();
+}, [token]);
 
   // ✅ Dynamic filters backend data se
   const allIndustries = [...new Set(startups.map(s => s.industry).filter(Boolean))];

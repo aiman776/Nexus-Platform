@@ -7,9 +7,9 @@ import {
 } from "lucide-react";
 
 export const Navbar = () => {
-  const { isLoggedIn, user, LogoutUser } = useAuth(); // ✅ LogoutUser add kiya
+  const { isLoggedIn, user, LogoutUser } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
-  const navigate = useNavigate(); // ✅ navigate add kiya
+  const navigate = useNavigate();
 
   const firstLetter = user?.username?.charAt(0).toUpperCase() || "U";
   const username = user?.username || "";
@@ -18,11 +18,21 @@ export const Navbar = () => {
     ? "/dashboard/investor"
     : "/dashboard/entrepreneur";
 
+  // ✅ Role based profile link
+  const profileLink = user?.role === "investor"
+    ? `/investor/${user?._id || user?.id}`
+    : `/entrepreneur/${user?._id || user?.id}`;
+
   // ✅ Logout handler
   const handleLogout = (e) => {
     e.preventDefault();
     LogoutUser();
     navigate("/login");
+  };
+
+  // ✅ Avatar click - profile pe jao
+  const handleAvatarClick = () => {
+    if (user) navigate(profileLink);
   };
 
   return (
@@ -64,14 +74,24 @@ export const Navbar = () => {
                     <User size={17} /> Profile
                   </NavLink>
                 </li>
-                {/* ✅ Fix: /logout route ki jagah function call */}
                 <li>
                   <a href="#" onClick={handleLogout}>
                     <LogOut size={17} /> Logout
                   </a>
                 </li>
-                <li className="avatar-wrapper">
-                  <div className="avatar-circle">{firstLetter}</div>
+
+                {/* ✅ Avatar - click pe profile, green dot online status */}
+                <li
+                  className="avatar-wrapper"
+                  onClick={handleAvatarClick}
+                  style={{ cursor: "pointer" }}
+                  title={`View ${username}'s profile`}
+                >
+                  <div className="avatar-circle-wrapper">
+                    <div className="avatar-circle">{firstLetter}</div>
+                    {/* ✅ Green dot - online */}
+                    <span className="avatar-online-dot"></span>
+                  </div>
                   <span className="avatar-name">{username}</span>
                 </li>
               </>

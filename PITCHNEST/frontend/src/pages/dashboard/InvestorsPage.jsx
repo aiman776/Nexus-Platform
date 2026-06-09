@@ -16,22 +16,49 @@ const InvestorsPage = () => {
   const [selectedLocation, setSelectedLocation] = useState('');
 
   // ✅ Backend se investors fetch karo
-  useEffect(() => {
-    const fetchInvestors = async () => {
-      try {
-        const res = await fetch('http://localhost:1000/api/investors', {
+useEffect(() => {
+  const fetchInvestors = async () => {
+    try {
+      // ✅ Pehle investor profiles fetch karo
+      const res = await fetch('http://localhost:1000/api/investors', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+
+      if (res.ok && data.investors?.length > 0) {
+        setInvestors(data.investors);
+      } else {
+        // ✅ Agar profiles nahi hain toh users fetch karo
+        const userRes = await fetch('http://localhost:1000/api/investors/all-users', {
           headers: { Authorization: `Bearer ${token}` },
         });
-        const data = await res.json();
-        if (res.ok) setInvestors(data.investors || []);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
+        const userData = await userRes.json();
+        if (userRes.ok) {
+          // ✅ User data ko investor format mein convert karo
+          const converted = userData.investors.map(u => ({
+            _id: u._id,
+            name: u.username,
+            company: 'N/A',
+            location: u.location || 'N/A',
+            bio: u.bio || 'Investor',
+            investmentStage: [],
+            investmentInterests: [],
+            minimumInvestment: 'N/A',
+            maximumInvestment: 'N/A',
+            totalInvestments: 0,
+            user: u._id,
+          }));
+          setInvestors(converted);
+        }
       }
-    };
-    if (token) fetchInvestors();
-  }, [token]);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+  if (token) fetchInvestors();
+}, [token]);
 
   // ✅ Dynamic filters
   const allStages = [...new Set(investors.flatMap(i => i.investmentStage || []))];

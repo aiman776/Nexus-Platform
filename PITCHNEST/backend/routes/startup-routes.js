@@ -12,5 +12,14 @@ router.get('/', authMiddleware, getAllStartups);
 router.get('/mine', authMiddleware, getMyStartup);
 router.post('/', authMiddleware, createStartup);
 router.put('/', authMiddleware, updateStartup);
-
+// ✅ Saare entrepreneur role users fetch karo
+router.get('/all-users', authMiddleware, async (req, res) => {
+  try {
+    const User = require('../models/user');
+    const entrepreneurs = await User.find({ role: 'entrepreneur' }).select('-password');
+    res.status(200).json({ success: true, entrepreneurs });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
 module.exports = router;

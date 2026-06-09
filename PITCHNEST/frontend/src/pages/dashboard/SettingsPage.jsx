@@ -50,34 +50,36 @@ const SettingsPage = () => {
   };
 
   // ✅ Profile update — backend se connect
-  const handleProfileSave = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await fetch('http://localhost:1000/api/profile', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          username: profileData.username,
-          location: profileData.location,
-          bio: profileData.bio,
-          website: profileData.website,
-          linkedin: profileData.linkedin,
-        }),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        alert('Profile updated successfully!');
-      } else {
-        alert(data.message || 'Update failed');
-      }
-    } catch (err) {
-      console.error(err);
-      alert('Server error');
+ const handleProfileSave = async (e) => {
+  e.preventDefault();
+  try {
+    const res = await fetch('http://localhost:1000/api/profile', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        username: profileData.username,
+        location: profileData.location,
+        bio: profileData.bio,
+        website: profileData.website,
+        linkedin: profileData.linkedin,
+      }),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      alert('Profile updated successfully!');
+      // ✅ Page reload karo taake fresh data aaye
+      window.location.reload();
+    } else {
+      alert(data.message || 'Update failed');
     }
-  };
+  } catch (err) {
+    console.error(err);
+    alert('Server error');
+  }
+};
 
   // ✅ Password update — backend se connect
   const handlePasswordUpdate = async (e) => {
@@ -243,8 +245,9 @@ const SettingsPage = () => {
                   </div>
                 </form>
               </div>
-            )}
-
+            )
+            }
+            
             {/* Security */}
             {activeTab === 'security' && (
               <div className="settings-section">
